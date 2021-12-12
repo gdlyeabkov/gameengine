@@ -1,0 +1,16 @@
+C:\wpf_projects\GameEngine\GameEngine\bin\Debug\GameEngine.exe.config
+C:\wpf_projects\GameEngine\GameEngine\bin\Debug\GameEngine.exe
+C:\wpf_projects\GameEngine\GameEngine\bin\Debug\GameEngine.pdb
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.csproj.AssemblyReference.cache
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.csproj.SuggestedBindingRedirects.cache
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\MainWindow.g.cs
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\App.g.cs
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine_MarkupCompile.cache
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine_MarkupCompile.lref
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\MainWindow.baml
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.g.resources
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.Properties.Resources.resources
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.csproj.GenerateResource.cache
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.csproj.CoreCompileInputs.cache
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.exe
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.pdb
