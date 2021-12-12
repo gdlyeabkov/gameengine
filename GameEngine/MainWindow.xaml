@@ -5,17 +5,44 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEngine"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        WindowState="Maximized" Title="MainWindow" Height="450" Width="800">
     <DockPanel>
         <StackPanel x:Name="menuString" DockPanel.Dock="Top" Height="25" Background="Red">
             
         </StackPanel>
 
         <StackPanel x:Name="hierarchy" DockPanel.Dock="Left" Width="150" Background="Pink">
-            <StackPanel>
-                <TextBlock Text="Персонаж" />
-                <TextBlock Text="Персонаж" />
-            </StackPanel>
+            <StackPanel.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Создать игровой объект" Click="CreateGameObjectHandler" />
+                </ContextMenu>
+            </StackPanel.ContextMenu>
+            <ScrollViewer VerticalScrollBarVisibility="Visible">
+                <StackPanel x:Name="hierarchyGameObjects">
+                    <!--
+                    <StackPanel Background="LightGray" Orientation="Horizontal">
+                        <TextBlock Width="15" Margin="5, 0, 5, 0" Text="⮫" MouseLeftButtonUp="ToggleGameObjectHandler" />
+                        <TextBlock Text="Персонаж" />
+                    </StackPanel>
+                    <StackPanel Background="LightGray" Orientation="Horizontal">
+                        <TextBlock Width="15" Margin="5, 0, 5, 0" Text="⮫" MouseLeftButtonUp="ToggleGameObjectHandler" />
+                        <TextBlock Text="Персонаж" />
+                    </StackPanel>
+                    <StackPanel Background="LightGray" Orientation="Horizontal">
+                        <TextBlock Width="15" Margin="5, 0, 5, 0" Text="⮫" MouseLeftButtonUp="ToggleGameObjectHandler" />
+                        <TextBlock Text="Персонаж" />
+                    </StackPanel>
+                    <StackPanel Background="LightGray" Orientation="Horizontal">
+                        <TextBlock Width="15" Margin="5, 0, 5, 0" Text="⮫" MouseLeftButtonUp="ToggleGameObjectHandler" />
+                        <TextBlock Text="Персонаж" />
+                    </StackPanel>
+                    <StackPanel Background="LightGray" Orientation="Horizontal">
+                        <TextBlock Width="15" Margin="5, 0, 5, 0" Text="⮫" MouseLeftButtonUp="ToggleGameObjectHandler" />
+                        <TextBlock Text="Персонаж" />
+                    </StackPanel>
+                    -->
+                </StackPanel>
+            </ScrollViewer>
         </StackPanel>
         <StackPanel x:Name="inspector" DockPanel.Dock="Right" Width="150" Background="Blue">
 
