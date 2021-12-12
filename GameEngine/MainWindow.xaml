@@ -7,17 +7,29 @@
         mc:Ignorable="d"
         WindowState="Maximized" Title="MainWindow" Height="450" Width="800">
     <DockPanel>
-        <StackPanel x:Name="menuString" DockPanel.Dock="Top" Height="25" Background="Red">
-            
+        <StackPanel x:Name="menuString" DockPanel.Dock="Top" Height="18" Background="Red">
+            <Menu Height="18">
+                <MenuItem Header="Файл">
+                    <MenuItem Header="Создать игру" Click="ImportAssetHanler" />
+                </MenuItem>
+                <MenuItem Header="Правка">
+                    <MenuItem Header="Копировать" Click="ImportAssetHanler" />
+                </MenuItem>
+                <MenuItem Header="Ресурсы">
+                    <MenuItem Header="Импортировать ресурс" Click="ImportAssetHanler" />
+                </MenuItem>
+                <MenuItem Header="Окна">
+                    <MenuItem Header="Иерархия" Click="ImportAssetHanler" />
+                </MenuItem>
+            </Menu>
         </StackPanel>
-
-        <StackPanel x:Name="hierarchy" DockPanel.Dock="Left" Width="150" Background="Pink">
-            <StackPanel.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Создать игровой объект" Click="CreateGameObjectHandler" />
-                </ContextMenu>
-            </StackPanel.ContextMenu>
-            <ScrollViewer VerticalScrollBarVisibility="Visible">
+        <ScrollViewer VerticalScrollBarVisibility="Visible">
+            <StackPanel x:Name="hierarchy" DockPanel.Dock="Left" Width="150" Background="Pink">
+                <StackPanel.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Создать игровой объект" Click="CreateGameObjectHandler" />
+                    </ContextMenu>
+                </StackPanel.ContextMenu>
                 <StackPanel x:Name="hierarchyGameObjects">
                     <!--
                     <StackPanel Background="LightGray" Orientation="Horizontal">
@@ -42,13 +54,78 @@
                     </StackPanel>
                     -->
                 </StackPanel>
-            </ScrollViewer>
-        </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
         <StackPanel x:Name="inspector" DockPanel.Dock="Right" Width="150" Background="Blue">
-
+            <StackPanel x:Name="components">
+                <!--
+                <StackPanel Margin="10"  Orientation="Horizontal">
+                    <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
+                    <CheckBox Margin="5, 0, 5, 0" />
+                    <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
+                </StackPanel>
+                <StackPanel Margin="10"  Orientation="Horizontal">
+                    <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
+                    <CheckBox Margin="5, 0, 5, 0" />
+                    <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
+                </StackPanel>
+                <StackPanel Margin="10"  Orientation="Horizontal">
+                    <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
+                    <CheckBox Margin="5, 0, 5, 0" />
+                    <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
+                </StackPanel>
+                <StackPanel Margin="10"  Orientation="Horizontal">
+                    <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
+                    <CheckBox Margin="5, 0, 5, 0" />
+                    <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
+                </StackPanel>
+                <StackPanel Margin="10"  Orientation="Horizontal">
+                    <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
+                    <CheckBox Margin="5, 0, 5, 0" />
+                    <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
+                </StackPanel>
+                -->
+            </StackPanel>
+            <!--
+            <Button Content="Добавить компонент" Click="AddComponentHandler" />
+            -->
+            <ComboBox x:Name="selectedAddedComponent" Margin="0, 5, 0, 5" Visibility="Collapsed" SelectedIndex="0">
+                <ComboBoxItem Content="Физика" />
+                <ComboBoxItem Content="Свет" />
+                <ComboBoxItem Content="Система частиц" />
+            </ComboBox>
+            <Button x:Name="addComponentBtn" Margin="0, 5, 0, 5" Visibility="Collapsed" Content="Добавить компонент" Click="AddComponentHandler" />
         </StackPanel>
-        <StackPanel x:Name="project" DockPanel.Dock="Bottom" Height="100" Background="Green">
-
+        <StackPanel x:Name="project" DockPanel.Dock="Bottom" Height="100" Background="Green" Orientation="Horizontal">
+            <StackPanel.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Импортировать ресурс" Click="ImportAssetHanler" />
+                </ContextMenu>
+            </StackPanel.ContextMenu>
+            <StackPanel x:Name="projectAssets" Orientation="Horizontal">
+                <!--
+                <StackPanel HorizontalAlignment="Left" Width="45" Margin="10">
+                    <TextBlock HorizontalAlignment="Center" FontSize="36" Text="🖿" />
+                    <TextBlock HorizontalAlignment="Center" Text="icon.png" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" Width="45" Margin="10">
+                    <TextBlock HorizontalAlignment="Center" FontSize="36" Text="🖿" />
+                    <TextBlock HorizontalAlignment="Center" Text="icon.png" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" Width="45" Margin="10">
+                    <TextBlock HorizontalAlignment="Center" FontSize="36" Text="🖿" />
+                    <TextBlock HorizontalAlignment="Center" Text="icon.png" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" Width="45" Margin="10">
+                    <TextBlock HorizontalAlignment="Center" FontSize="36" Text="🖿" />
+                    <TextBlock HorizontalAlignment="Center" Text="icon.png" />
+                </StackPanel>
+                <StackPanel HorizontalAlignment="Left" Width="45" Margin="10">
+                    <TextBlock HorizontalAlignment="Center" FontSize="36" Text="🖿" />
+                    <TextBlock HorizontalAlignment="Center" Text="icon.png" />
+                </StackPanel>
+                -->
+            </StackPanel>
         </StackPanel>
         <StackPanel x:Name="scene" DockPanel.Dock="Bottom" Background="Orange">
             
