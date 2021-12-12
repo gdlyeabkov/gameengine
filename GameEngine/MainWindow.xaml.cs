@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using System.Speech.Synthesis;
 using Microsoft.Win32;
 using System.IO;
+using System.Windows.Media.Media3D;
 
 namespace GameEngine
 {
@@ -100,6 +101,30 @@ namespace GameEngine
             notFoundComponents.Text = "Нет прикрепленных компонентов";
             notFoundComponents.Margin = new Thickness(0, 5, 0, 5);
             components.Children.Add(notFoundComponents);
+
+            ModelVisual3D gameObjectMesh = new ModelVisual3D();
+            MeshGeometry3D gameObjectMeshGeometry3D = new MeshGeometry3D();
+            Point3DCollection gameObjectMeshPositions = new Point3DCollection();
+            gameObjectMeshPositions.Add(new Point3D(-0.5, -0.5, 0.5));
+            gameObjectMeshPositions.Add(new Point3D(0.5, -0.5, 0.5));
+            gameObjectMeshPositions.Add(new Point3D(0.5, 0.5, 0.5));
+            gameObjectMeshPositions.Add(new Point3D(0.5, 0.5, 0.5));
+            gameObjectMeshPositions.Add(new Point3D(-0.5, 0.5, 0.5));
+            gameObjectMeshPositions.Add(new Point3D(-0.5, -0.5, 0.5));
+            gameObjectMeshGeometry3D.Positions = gameObjectMeshPositions;
+            GeometryModel3D gameObjectMeshGeometryModel = new GeometryModel3D();
+            gameObjectMeshGeometryModel.Geometry = gameObjectMeshGeometry3D;
+            Transform3DGroup gameObjectMeshTransform = new Transform3DGroup();
+            ScaleTransform3D gameObjectMeshTransformScale = new ScaleTransform3D();
+            gameObjectMeshTransformScale.ScaleX = 0.1;
+            gameObjectMeshTransformScale.ScaleY = 0.1;
+            gameObjectMeshTransformScale.ScaleZ = 0.1;
+            TranslateTransform3D gameObjectMeshTransformTranslate = new TranslateTransform3D();
+            gameObjectMeshTransformTranslate.OffsetX = 6;
+            gameObjectMeshTransform.Children.Add(gameObjectMeshTransformScale);
+            gameObjectMeshTransform.Children.Add(gameObjectMeshTransformTranslate);
+            gameObjectMeshGeometryModel.Transform = gameObjectMeshTransform;
+            space.Children.Add(gameObjectMesh);
 
         }
 
