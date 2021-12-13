@@ -64,6 +64,9 @@ namespace GameEngine
             newGameObject.Add("id", gameObjectId);
             newGameObject.Add("isSelected", true);
             List<Dictionary<String, Object>> localComponents = new List<Dictionary<String, Object>>();
+            /*Dictionary<String, Object> defautlTransformComponent = new Dictionary<String, Object>();
+            defautlTransformComponent.Add("name", "Трансформация");
+            localComponents.Add(defautlTransformComponent);*/
             newGameObject.Add("components", localComponents);
             gameObjects.Add(newGameObject);
 
@@ -120,11 +123,27 @@ namespace GameEngine
             gameObjectMeshTransformScale.ScaleY = 0.1;
             gameObjectMeshTransformScale.ScaleZ = 0.1;
             TranslateTransform3D gameObjectMeshTransformTranslate = new TranslateTransform3D();
-            gameObjectMeshTransformTranslate.OffsetX = 6;
-            gameObjectMeshTransform.Children.Add(gameObjectMeshTransformScale);
+            gameObjectMeshTransformTranslate.OffsetX = 0;
+            gameObjectMeshTransformTranslate.OffsetY = 0;
+            gameObjectMeshTransformTranslate.OffsetZ = 0;
+            RotateTransform3D gameObjectMeshTransformRotate = new RotateTransform3D();
+            gameObjectMeshTransformRotate.Rotation = new AxisAngleRotation3D(new Vector3D(0, 0, 0), 0);
             gameObjectMeshTransform.Children.Add(gameObjectMeshTransformTranslate);
+            gameObjectMeshTransform.Children.Add(gameObjectMeshTransformScale);
+            gameObjectMeshTransform.Children.Add(gameObjectMeshTransformRotate);
             gameObjectMeshGeometryModel.Transform = gameObjectMeshTransform;
+            MaterialGroup gameObjectMeshMaterialGroup = new MaterialGroup();
+            DiffuseMaterial gameObjectMeshDiffuseMaterial = new DiffuseMaterial();
+            Color gameObjectMeshSolidColor = new Color();
+            gameObjectMeshSolidColor.R = 255;
+            gameObjectMeshSolidColor.G = 0;
+            gameObjectMeshSolidColor.B = 0;
+            gameObjectMeshDiffuseMaterial.Brush = System.Windows.Media.Brushes.Red;
+            gameObjectMeshMaterialGroup.Children.Add(gameObjectMeshDiffuseMaterial);
+            gameObjectMeshGeometryModel.Material = gameObjectMeshMaterialGroup;
+            gameObjectMesh.Content = gameObjectMeshGeometryModel;
             space.Children.Add(gameObjectMesh);
+            debugger.Speak(space.Children.Count.ToString());
 
         }
 
@@ -148,31 +167,118 @@ namespace GameEngine
                 {
                     debugger.Speak("Обнаружен компонент " + component["name"].ToString());
                     StackPanel inspectorComponent = new StackPanel();
-                    inspectorComponent.Orientation = Orientation.Horizontal;
-                    inspectorComponent.Margin = new Thickness(10, 10, 10, 10);
-                    TextBlock inspectorComponentIcon = new TextBlock();
-                    inspectorComponentIcon.Margin = new Thickness(5, 0, 5, 0);
-                    if (component["name"].ToString() == "Физика")
+                    StackPanel inspectorComponentHeader = new StackPanel();
+                    inspectorComponentHeader.Orientation = Orientation.Horizontal;
+                    inspectorComponentHeader.Margin = new Thickness(10, 10, 10, 10);
+                    TextBlock inspectorComponentHeaderIcon = new TextBlock();
+                    inspectorComponentHeaderIcon.Margin = new Thickness(5, 0, 5, 0);
+                    if (component["name"].ToString() == "Трансформация")
                     {
-                        inspectorComponentIcon.Text = "⚛";
+                        inspectorComponentHeaderIcon.Text = "⤧";
+                    }
+                    else if (component["name"].ToString() == "Физика")
+                    {
+                        inspectorComponentHeaderIcon.Text = "⚛";
                     }
                     else if (component["name"].ToString() == "Свет")
                     {
-                        inspectorComponentIcon.Text = "💡";
+                        inspectorComponentHeaderIcon.Text = "💡";
                     }
                     else if (component["name"].ToString() == "Система частиц")
                     {
-                        inspectorComponentIcon.Text = "💦";
+                        inspectorComponentHeaderIcon.Text = "💦";
                     }
-                    CheckBox inspectorComponentIsEnabled = new CheckBox();
-                    inspectorComponentIsEnabled.Margin = new Thickness(5, 0, 5, 0);
-                    inspectorComponentIsEnabled.IsChecked = true;
-                    TextBlock inspectorComponentLabel = new TextBlock();
-                    inspectorComponentLabel.Margin = new Thickness(5, 0, 5, 0);
-                    inspectorComponentLabel.Text = component["name"].ToString();
-                    inspectorComponent.Children.Add(inspectorComponentIcon);
-                    inspectorComponent.Children.Add(inspectorComponentIsEnabled);
-                    inspectorComponent.Children.Add(inspectorComponentLabel);
+                    CheckBox inspectorComponentHeaderIsEnabled = new CheckBox();
+                    inspectorComponentHeaderIsEnabled.Margin = new Thickness(5, 0, 5, 0);
+                    inspectorComponentHeaderIsEnabled.IsChecked = true;
+                    TextBlock inspectorComponentHeaderLabel = new TextBlock();
+                    inspectorComponentHeaderLabel.Margin = new Thickness(5, 0, 5, 0);
+                    inspectorComponentHeaderLabel.Text = component["name"].ToString();
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderIcon);
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderIsEnabled);
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderLabel);
+
+                    StackPanel inspectorComponentBody = new StackPanel();
+                    if (component["name"].ToString() == "Трансформация")
+                    {
+                        StackPanel inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        TextBlock inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        TextBox inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                    }
+                    else if (component["name"].ToString() == "Физика")
+                    {
+                        
+                    }
+                    else if (component["name"].ToString() == "Свет")
+                    {
+                        
+                    }
+                    else if (component["name"].ToString() == "Система частиц")
+                    {
+                        
+                    }
+                    inspectorComponent.Children.Add(inspectorComponentHeader);
+                    inspectorComponent.Children.Add(inspectorComponentBody);
                     components.Children.Add(inspectorComponent);
                 }
             } else if (localComponents.Count <= 0) {
@@ -208,31 +314,118 @@ namespace GameEngine
                 {
                     debugger.Speak("Обнаружен компонент " + component["name"].ToString());
                     StackPanel inspectorComponent = new StackPanel();
-                    inspectorComponent.Orientation = Orientation.Horizontal;
-                    inspectorComponent.Margin = new Thickness(10, 10, 10, 10);
-                    TextBlock inspectorComponentIcon = new TextBlock();
-                    inspectorComponentIcon.Margin = new Thickness(5, 0, 5, 0);
-                    if (component["name"].ToString() == "Физика")
+                    StackPanel inspectorComponentHeader = new StackPanel();
+                    inspectorComponentHeader.Orientation = Orientation.Horizontal;
+                    inspectorComponentHeader.Margin = new Thickness(10, 10, 10, 10);
+                    TextBlock inspectorComponentHeaderIcon = new TextBlock();
+                    inspectorComponentHeaderIcon.Margin = new Thickness(5, 0, 5, 0);
+                    if (component["name"].ToString() == "Трансформация")
                     {
-                        inspectorComponentIcon.Text = "⚛";
+                        inspectorComponentHeaderIcon.Text = "⤧";
+                    }
+                    else if (component["name"].ToString() == "Физика")
+                    {
+                        inspectorComponentHeaderIcon.Text = "⚛";
                     }
                     else if (component["name"].ToString() == "Свет")
                     {
-                        inspectorComponentIcon.Text = "💡";
+                        inspectorComponentHeaderIcon.Text = "💡";
                     }
                     else if (component["name"].ToString() == "Система частиц")
                     {
-                        inspectorComponentIcon.Text = "💦";
+                        inspectorComponentHeaderIcon.Text = "💦";
                     }
-                    CheckBox inspectorComponentIsEnabled = new CheckBox();
-                    inspectorComponentIsEnabled.Margin = new Thickness(5, 0, 5, 0);
-                    inspectorComponentIsEnabled.IsChecked = true;
-                    TextBlock inspectorComponentLabel = new TextBlock();
-                    inspectorComponentLabel.Margin = new Thickness(5, 0, 5, 0);
-                    inspectorComponentLabel.Text = component["name"].ToString();
-                    inspectorComponent.Children.Add(inspectorComponentIcon);
-                    inspectorComponent.Children.Add(inspectorComponentIsEnabled);
-                    inspectorComponent.Children.Add(inspectorComponentLabel);
+                    CheckBox inspectorComponentHeaderIsEnabled = new CheckBox();
+                    inspectorComponentHeaderIsEnabled.Margin = new Thickness(5, 0, 5, 0);
+                    inspectorComponentHeaderIsEnabled.IsChecked = true;
+                    TextBlock inspectorComponentHeaderLabel = new TextBlock();
+                    inspectorComponentHeaderLabel.Margin = new Thickness(5, 0, 5, 0);
+                    inspectorComponentHeaderLabel.Text = component["name"].ToString();
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderIcon);
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderIsEnabled);
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderLabel);
+
+                    StackPanel inspectorComponentBody = new StackPanel();
+                    if (component["name"].ToString() == "Трансформация")
+                    {
+                        StackPanel inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        TextBlock inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        TextBox inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                    }
+                    else if (component["name"].ToString() == "Физика")
+                    {
+                        
+                    }
+                    else if (component["name"].ToString() == "Свет")
+                    {
+                        
+                    }
+                    else if (component["name"].ToString() == "Система частиц")
+                    {
+                        
+                    }
+                    inspectorComponent.Children.Add(inspectorComponentHeader);
+                    inspectorComponent.Children.Add(inspectorComponentBody);
                     components.Children.Add(inspectorComponent);
                 }
             } else if (localComponents.Count <= 0) {
@@ -316,6 +509,97 @@ namespace GameEngine
             selectedAsset.Background = System.Windows.Media.Brushes.LightBlue;
         }
 
+        private void GlobalHotKeysHandler(object sender, KeyEventArgs e)
+        {
+            if (gameObjects.Count >= 1) {
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                if ((Keyboard.Modifiers & ModifierKeys.Control) > 0)
+                {
+                    if (e.Key == Key.Left)
+                    {
+                        ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                        Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                        Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                        RotateTransform3D currentMeshTransformRotate = ((RotateTransform3D)(currentMeshTransform.Children[2]));
+                        currentMeshTransformRotate.Rotation = new AxisAngleRotation3D(new Vector3D(0, 0, 1), ((AxisAngleRotation3D)(currentMeshTransformRotate.Rotation)).Angle - 15);
+                    }
+                    else if (e.Key == Key.Right)
+                    {
+                        ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                        Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                        Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                        RotateTransform3D currentMeshTransformRotate = ((RotateTransform3D)(currentMeshTransform.Children[2]));
+                        currentMeshTransformRotate.Rotation = new AxisAngleRotation3D(new Vector3D(0, 0, 1), ((AxisAngleRotation3D)(currentMeshTransformRotate.Rotation)).Angle + 15);
+                    }
+                }
+                else if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0)
+                {
+                    if (e.Key == Key.Left)
+                    {
+                        ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                        Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                        Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                        ScaleTransform3D currentMeshTransformScale = ((ScaleTransform3D)(currentMeshTransform.Children[1]));
+                        currentMeshTransformScale.ScaleX -= 0.1;
+                        currentMeshTransformScale.ScaleY -= 0.1;
+                        currentMeshTransformScale.ScaleZ -= 0.1;
+                    }
+                    else if (e.Key == Key.Right)
+                    {
+                        ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                        Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                        Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                        ScaleTransform3D currentMeshTransformScale = ((ScaleTransform3D)(currentMeshTransform.Children[1]));
+                        currentMeshTransformScale.ScaleX += 0.1;
+                        currentMeshTransformScale.ScaleY += 0.1;
+                        currentMeshTransformScale.ScaleZ += 0.1;
+                    }
+                }
+                else
+                {
+                    if (e.Key == Key.Left)
+                    {
+                        ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                        Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                        Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                        TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+                        currentMeshTransformTranslate.OffsetX -= 1;
+                    }
+                    else if (e.Key == Key.Right)
+                    {
+                        ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                        Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                        Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                        TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+                        currentMeshTransformTranslate.OffsetX += 1;
+                    }
+                    else if (e.Key == Key.Up)
+                    {
+                        ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                        Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                        Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                        TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+                        currentMeshTransformTranslate.OffsetY += 1;
+                    }
+                    else if (e.Key == Key.Down)
+                    {
+                        ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                        Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                        Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                        TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+                        currentMeshTransformTranslate.OffsetY -= 1;
+                    }
+                }
+            }
+        }
     }
 
 }
