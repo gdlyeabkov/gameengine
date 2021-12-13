@@ -16,6 +16,7 @@ using System.Speech.Synthesis;
 using Microsoft.Win32;
 using System.IO;
 using System.Windows.Media.Media3D;
+using FarseerPhysics;
 
 namespace GameEngine
 {
@@ -27,6 +28,7 @@ namespace GameEngine
 
         public List<Dictionary<String, Object>> gameObjects;
         public List<Dictionary<String, Object>> assets;
+        public bool graphicMode = false;
         public SpeechSynthesizer debugger;
 
         public MainWindow()
@@ -108,13 +110,53 @@ namespace GameEngine
             ModelVisual3D gameObjectMesh = new ModelVisual3D();
             MeshGeometry3D gameObjectMeshGeometry3D = new MeshGeometry3D();
             Point3DCollection gameObjectMeshPositions = new Point3DCollection();
-            gameObjectMeshPositions.Add(new Point3D(-0.5, -0.5, 0.5));
-            gameObjectMeshPositions.Add(new Point3D(0.5, -0.5, 0.5));
-            gameObjectMeshPositions.Add(new Point3D(0.5, 0.5, 0.5));
-            gameObjectMeshPositions.Add(new Point3D(0.5, 0.5, 0.5));
-            gameObjectMeshPositions.Add(new Point3D(-0.5, 0.5, 0.5));
-            gameObjectMeshPositions.Add(new Point3D(-0.5, -0.5, 0.5));
+            gameObjectMeshPositions.Add(new Point3D(0, 0, 0));
+            gameObjectMeshPositions.Add(new Point3D(1, 0, 0));
+            gameObjectMeshPositions.Add(new Point3D(1, 1, 0));
+            gameObjectMeshPositions.Add(new Point3D(0, 1, 0));
+            gameObjectMeshPositions.Add(new Point3D(0, 0, 1));
+            gameObjectMeshPositions.Add(new Point3D(1, 0, 1));
+            gameObjectMeshPositions.Add(new Point3D(1, 1, 1));
+            gameObjectMeshPositions.Add(new Point3D(0, 1, 1));
             gameObjectMeshGeometry3D.Positions = gameObjectMeshPositions;
+            Int32Collection gameObjectMeshTriangleIndices = new Int32Collection();
+            gameObjectMeshTriangleIndices.Add(0);
+            gameObjectMeshTriangleIndices.Add(1);
+            gameObjectMeshTriangleIndices.Add(3);
+            gameObjectMeshTriangleIndices.Add(1);
+            gameObjectMeshTriangleIndices.Add(2);
+            gameObjectMeshTriangleIndices.Add(3);
+            gameObjectMeshTriangleIndices.Add(0);
+            gameObjectMeshTriangleIndices.Add(4);
+            gameObjectMeshTriangleIndices.Add(3);
+            gameObjectMeshTriangleIndices.Add(4);
+            gameObjectMeshTriangleIndices.Add(7);
+            gameObjectMeshTriangleIndices.Add(3);
+            gameObjectMeshTriangleIndices.Add(4);
+            gameObjectMeshTriangleIndices.Add(6);
+            gameObjectMeshTriangleIndices.Add(7);
+            gameObjectMeshTriangleIndices.Add(4);
+            gameObjectMeshTriangleIndices.Add(5);
+            gameObjectMeshTriangleIndices.Add(6);
+            gameObjectMeshTriangleIndices.Add(0);
+            gameObjectMeshTriangleIndices.Add(4);
+            gameObjectMeshTriangleIndices.Add(1);
+            gameObjectMeshTriangleIndices.Add(1);
+            gameObjectMeshTriangleIndices.Add(4);
+            gameObjectMeshTriangleIndices.Add(5);
+            gameObjectMeshTriangleIndices.Add(1);
+            gameObjectMeshTriangleIndices.Add(2);
+            gameObjectMeshTriangleIndices.Add(6);
+            gameObjectMeshTriangleIndices.Add(6);
+            gameObjectMeshTriangleIndices.Add(5);
+            gameObjectMeshTriangleIndices.Add(1);
+            gameObjectMeshTriangleIndices.Add(2);
+            gameObjectMeshTriangleIndices.Add(3);
+            gameObjectMeshTriangleIndices.Add(7);
+            gameObjectMeshTriangleIndices.Add(7);
+            gameObjectMeshTriangleIndices.Add(6);
+            gameObjectMeshTriangleIndices.Add(2);
+            gameObjectMeshGeometry3D.TriangleIndices = gameObjectMeshTriangleIndices;
             GeometryModel3D gameObjectMeshGeometryModel = new GeometryModel3D();
             gameObjectMeshGeometryModel.Geometry = gameObjectMeshGeometry3D;
             Transform3DGroup gameObjectMeshTransform = new Transform3DGroup();
@@ -127,7 +169,8 @@ namespace GameEngine
             gameObjectMeshTransformTranslate.OffsetY = 0;
             gameObjectMeshTransformTranslate.OffsetZ = 0;
             RotateTransform3D gameObjectMeshTransformRotate = new RotateTransform3D();
-            gameObjectMeshTransformRotate.Rotation = new AxisAngleRotation3D(new Vector3D(0, 0, 0), 0);
+            /*gameObjectMeshTransformRotate.Rotation = new AxisAngleRotation3D(new Vector3D(0, 0, 0), 0);*/
+            gameObjectMeshTransformRotate.Rotation = new QuaternionRotation3D(new Quaternion(0, 0, 0, 0));
             gameObjectMeshTransform.Children.Add(gameObjectMeshTransformTranslate);
             gameObjectMeshTransform.Children.Add(gameObjectMeshTransformScale);
             gameObjectMeshTransform.Children.Add(gameObjectMeshTransformRotate);
@@ -199,69 +242,147 @@ namespace GameEngine
                     inspectorComponentHeader.Children.Add(inspectorComponentHeaderLabel);
 
                     StackPanel inspectorComponentBody = new StackPanel();
+                    
+                    int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                    ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                    Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                    Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                    TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+                    RotateTransform3D currentMeshTransformRotate = ((RotateTransform3D)(currentMeshTransform.Children[2]));
+                    ScaleTransform3D currentMeshTransformScale = ((ScaleTransform3D)(currentMeshTransform.Children[1]));
+
                     if (component["name"].ToString() == "Трансформация")
                     {
+
                         StackPanel inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
                         TextBlock inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Положение";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         TextBox inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformTranslate.OffsetX.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateXPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformTranslate.OffsetY.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateYPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformTranslate.OffsetZ.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateZPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
                         inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Поворот";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateXPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateYPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = ((AxisAngleRotation3D)(currentMeshTransformRotate.Rotation)).Angle.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateZPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
                         inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Масштаб";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformScale.ScaleX.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentScaleXPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformScale.ScaleY.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentScaleYPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformScale.ScaleZ.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentScaleZPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
                     }
@@ -348,67 +469,136 @@ namespace GameEngine
                     StackPanel inspectorComponentBody = new StackPanel();
                     if (component["name"].ToString() == "Трансформация")
                     {
+
                         StackPanel inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
                         TextBlock inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Положение";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         TextBox inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateXPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateYPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateZPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
                         inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Поворот";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateXPropertyHandler; 
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateYPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateZPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
                         inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Масштаб";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0.1";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentScaleXPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0.1";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentScaleYPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                         inspectorComponentBodyItemInput = new TextBox();
                         inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0.1";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentScaleZPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
                     }
@@ -511,7 +701,7 @@ namespace GameEngine
 
         private void GlobalHotKeysHandler(object sender, KeyEventArgs e)
         {
-            if (gameObjects.Count >= 1) {
+            /*if (gameObjects.Count >= 1) {
                 Dictionary<String, Object> selectedGameObject = null;
                 foreach (Dictionary<String, Object> gameObject in gameObjects)
                 {
@@ -598,6 +788,241 @@ namespace GameEngine
                         currentMeshTransformTranslate.OffsetY -= 1;
                     }
                 }
+            }*/
+        }
+        private void SetTransformComponentTranslateXPropertyHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) {
+                TextBox settedProperty = ((TextBox)(sender));
+                int settedPropertyValue = Int32.Parse(settedProperty.Text);
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+                currentMeshTransformTranslate.OffsetX = settedPropertyValue;
+            }
+        }
+
+        private void SetTransformComponentTranslateYPropertyHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox settedProperty = ((TextBox)(sender));
+                int settedPropertyValue = Int32.Parse(settedProperty.Text);
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+                currentMeshTransformTranslate.OffsetY = settedPropertyValue;
+            }
+        }
+
+        private void SetTransformComponentTranslateZPropertyHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox settedProperty = ((TextBox)(sender));
+                int settedPropertyValue = Int32.Parse(settedProperty.Text);
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+                currentMeshTransformTranslate.OffsetZ = settedPropertyValue;
+            }
+        }
+
+        private void SetTransformComponentRotateXPropertyHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox settedProperty = ((TextBox)(sender));
+                int settedPropertyValue = Int32.Parse(settedProperty.Text);
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                RotateTransform3D currentMeshTransformRotate = ((RotateTransform3D)(currentMeshTransform.Children[2]));
+                currentMeshTransformRotate.Rotation = new AxisAngleRotation3D(new Vector3D(1, 0, 0), settedPropertyValue);
+                /*currentMeshTransformRotate.Rotation = new QuaternionRotation3D(new Quaternion(settedPropertyValue, ((QuaternionRotation3D)(currentMeshTransformRotate.Rotation)).Quaternion.Y, ((QuaternionRotation3D)(currentMeshTransformRotate.Rotation)).Quaternion.Z, ((QuaternionRotation3D)(currentMeshTransformRotate.Rotation)).Quaternion.W));*/
+            }
+        }
+        private void SetTransformComponentRotateYPropertyHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox settedProperty = ((TextBox)(sender));
+                int settedPropertyValue = Int32.Parse(settedProperty.Text);
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                RotateTransform3D currentMeshTransformRotate = ((RotateTransform3D)(currentMeshTransform.Children[2]));
+                currentMeshTransformRotate.Rotation = new AxisAngleRotation3D(new Vector3D(0, 1, 0), settedPropertyValue);
+                /*currentMeshTransformRotate.Rotation = new QuaternionRotation3D(new Quaternion(((QuaternionRotation3D)(currentMeshTransformRotate.Rotation)).Quaternion.X, settedPropertyValue, ((QuaternionRotation3D)(currentMeshTransformRotate.Rotation)).Quaternion.Z, ((QuaternionRotation3D)(currentMeshTransformRotate.Rotation)).Quaternion.W));*/
+            }
+        }
+
+        private void SetTransformComponentRotateZPropertyHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox settedProperty = ((TextBox)(sender));
+                int settedPropertyValue = Int32.Parse(settedProperty.Text);
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                RotateTransform3D currentMeshTransformRotate = ((RotateTransform3D)(currentMeshTransform.Children[2]));
+                currentMeshTransformRotate.Rotation = new AxisAngleRotation3D(new Vector3D(0, 0, 1), settedPropertyValue);
+                /*currentMeshTransformRotate.Rotation = new QuaternionRotation3D(new Quaternion(((QuaternionRotation3D)(currentMeshTransformRotate.Rotation)).Quaternion.X, ((QuaternionRotation3D)(currentMeshTransformRotate.Rotation)).Quaternion.Y, settedPropertyValue, ((QuaternionRotation3D)(currentMeshTransformRotate.Rotation)).Quaternion.W));*/
+            }
+        }
+
+        private void SetTransformComponentScaleXPropertyHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox settedProperty = ((TextBox)(sender));
+                int settedPropertyValue = Int32.Parse(settedProperty.Text);
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                ScaleTransform3D currentMeshTransformScale = ((ScaleTransform3D)(currentMeshTransform.Children[1]));
+                currentMeshTransformScale.ScaleX = settedPropertyValue;
+            }
+        }
+
+        private void SetTransformComponentScaleYPropertyHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox settedProperty = ((TextBox)(sender));
+                int settedPropertyValue = Int32.Parse(settedProperty.Text);
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                ScaleTransform3D currentMeshTransformScale = ((ScaleTransform3D)(currentMeshTransform.Children[1]));
+                currentMeshTransformScale.ScaleY = settedPropertyValue;
+            }
+        }
+
+        private void SetTransformComponentScaleZPropertyHandler(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                TextBox settedProperty = ((TextBox)(sender));
+                int settedPropertyValue = Int32.Parse(settedProperty.Text);
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                ScaleTransform3D currentMeshTransformScale = ((ScaleTransform3D)(currentMeshTransform.Children[1]));
+                currentMeshTransformScale.ScaleZ = settedPropertyValue;
+            }
+        }
+
+        private void PlayHandler(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void PauseHandler(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void SeekHandler(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ToggleGraphicModeHandler(object sender, RoutedEventArgs e)
+        {
+            graphicMode = !graphicMode;
+            if (!graphicMode)
+            {
+                graphicModeToggler.Content = "2D";
+                
+            } else
+            {
+                graphicModeToggler.Content = "3D";
             }
         }
     }

@@ -14,3 +14,5 @@ C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.csproj.GenerateResour
 C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.csproj.CoreCompileInputs.cache
 C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.exe
 C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.pdb
+C:\wpf_projects\GameEngine\GameEngine\bin\Debug\FarseerPhysics.dll
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.csproj.CopyComplete
