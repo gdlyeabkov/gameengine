@@ -110,6 +110,7 @@
     <Compile Include="Assets\Actor.cs" />
     <Compile Include="Assets\CrapBehaviour.cs" />
     <Compile Include="Assets\GameManager.cs" />
+    <Compile Include="Assets\Morph.cs" />
     <Compile Include="Assets\NetworkLogic.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

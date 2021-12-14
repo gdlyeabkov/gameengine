@@ -1049,7 +1049,7 @@ namespace GameEngine
                     if (assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() >= 1)
                     {
                         Type componentClass = Type.GetType(component["name"].ToString());
-                        Activator.CreateInstance(componentClass);
+                        Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), "", space);
                     }
                 }
             }
@@ -1118,11 +1118,21 @@ namespace GameEngine
             ComboBoxItem customComponent = new ComboBoxItem();
             customComponent.Content = assets[assets.Count - 1]["name"].ToString();
             selectedAddedComponent.Items.Add(customComponent);
-                    
+
+            using (Stream s = File.Open(@"C:\wpf_projects\GameEngine\GameEngine\Assets\" + assets[assets.Count - 1]["name"].ToString() + ".cs", FileMode.OpenOrCreate))
+            {
+                using (StreamWriter sw = new StreamWriter(s))
+                {
+                    sw.Write("using System;\nusing GameEngine;\nusing System.Speech.Synthesis;\n\nclass " + assets[assets.Count - 1]["name"].ToString() + " : CrapBehaviour\n{\n\n\tpublic SpeechSynthesizer localDebugger;\n\n\tpublic override void Start()\n\t{\n\t\tthis.localDebugger = new SpeechSynthesizer();\n\t\tthis.localDebugger.Speak(\"Actor Started as \" + name);\n\t}\n\n}");
+                }
+            }
+
             debugger.Speak("Тип ресурса " + assets[assets.Count - 1]["type"]);
 
             debugger.Speak("Ресурсов " + assets.Count.ToString());
         }
+
     }
+
 
 }
