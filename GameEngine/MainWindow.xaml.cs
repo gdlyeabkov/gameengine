@@ -19,6 +19,7 @@ using System.Windows.Media.Media3D;
 using FarseerPhysics;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis.Scripting;
 
 namespace GameEngine
 {
@@ -1041,49 +1042,14 @@ namespace GameEngine
 
         private void PlayHandler(object sender, RoutedEventArgs e)
         {
-            /*Process.Start(@"C:\csScripts\GameManager.cs");*/
-            /*Process proc = new Process();
-            proc.StartInfo.FileName = "c:\\csScripts\\GameManager.cs";
-            proc.StartInfo.WorkingDirectory = @"c:\csScripts\";
-            proc.Start();*/
-            // proc.WaitForExit();
-            /*double s = CSharpScript.EvaluateAsync<double>("5 + 7").Result;*/
-            /*int s = CSharpScript.EvaluateAsync<int>(@"
-                using System;
-                using System.Speech.Synthesis;
-                class GameManager
-                {
-                    public SpeechSynthesizer debugger;
-                    static int Main(string[] args)
-	                {
-		                debugger = new SpeechSynthesizer();
-                        debegger.Speak(5.ToString());
-                    }
-                }
-            ").Result;*/
-            /*debugger.Speak("Выполняю скрипты " + s);*/
-            /*foreach (Dictionary<String, Object> asset in assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["type"] == "script"))
-            {
-                debugger.Speak("Выполняю скрипты " + asset["name"]);
-            }*/
-            /*foreach (Dictionary<String, Object> asset in assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["type"] == "script"))
-            {
-                *//*debugger.Speak("Выполняю скрипты " + File.ReadAllText(@"C:\csScripts\" + asset["name"].ToString() + ".cs"));*//*
-                int s = CSharpScript.EvaluateAsync<int>(File.ReadAllText(@"C:\csScripts\" + asset["name"].ToString() + ".cs")).Result;
-                debugger.Speak("Выполняю скрипты " + s);
-            }*/
             foreach(Dictionary<String, Object> gameObject in gameObjects)
             {
                 foreach (Dictionary<String, Object> component in ((List<Dictionary<String, Object>>)(gameObject["components"])))
                 {
-                    try {
-                        /*int s = CSharpScript.EvaluateAsync<int>(File.ReadAllText(@"C:\wpf_projects\GameEngine\GameEngine\Assets\" + component["name"].ToString() + ".cs")).Result;*/
-                        int s = CSharpScript.EvaluateAsync<int>(File.ReadAllText(@"C:\csScripts\" + component["name"].ToString() + ".cs")).Result;
-                        debugger.Speak("Выполняю скрипты " + component["name"].ToString() + " " + s);
-                        /*debugger.Speak("Выполняю скрипты " + component["name"].ToString() + " " + s + " " + File.ReadAllText(@"C:\wpf_projects\GameEngine\GameEngine\Assets\" + component["name"].ToString() + ".cs"));*/
-                    } catch
+                    if (assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() >= 1)
                     {
-                        debugger.Speak("Ошибка чтения скрипта " + component["name"].ToString());
+                        Type componentClass = Type.GetType(component["name"].ToString());
+                        Activator.CreateInstance(componentClass);
                     }
                 }
             }
@@ -1110,6 +1076,52 @@ namespace GameEngine
             {
                 graphicModeToggler.Content = "3D";
             }
+        }
+
+        private void CreateScriptAssetHanler(object sender, RoutedEventArgs e)
+        {
+            string assetType = "script";
+                
+            projectAssets.Children.RemoveRange(0, projectAssets.Children.Count);
+            Dictionary<String, Object> newAsset = new Dictionary<String, Object>();
+            int assetId = assets.Count + 1;
+            newAsset.Add("id", assetId);
+            newAsset.Add("name", "CustomBehaviour" + (assets.Count + 1));
+            newAsset.Add("isSelected", false);
+            newAsset.Add("type", assetType);
+            assets.Add(newAsset);
+
+            foreach (Dictionary<String, Object> asset in assets)
+            {
+                StackPanel projectAsset = new StackPanel();
+                projectAsset.Margin = new Thickness(10, 10, 10, 10);
+                projectAsset.HorizontalAlignment = HorizontalAlignment.Left;
+                projectAsset.Width = 45;
+                if (((bool)(asset["isSelected"])))
+                {
+                    projectAsset.Background = System.Windows.Media.Brushes.LightBlue;
+                }
+                TextBlock projectAssetIcon = new TextBlock();
+                projectAssetIcon.Text = "🖿";
+                projectAssetIcon.HorizontalAlignment = HorizontalAlignment.Center;
+                projectAssetIcon.FontSize = 36;
+                projectAssetIcon.Foreground = System.Windows.Media.Brushes.BlueViolet;
+                TextBlock projectAssetLabel = new TextBlock();
+                projectAssetLabel.Text = asset["name"].ToString();
+                projectAssetLabel.HorizontalAlignment = HorizontalAlignment.Center;
+                projectAsset.Children.Add(projectAssetIcon);
+                projectAsset.Children.Add(projectAssetLabel);
+                projectAsset.MouseLeftButtonUp += SelectAssetHandler;
+                projectAssets.Children.Add(projectAsset);
+            }
+
+            ComboBoxItem customComponent = new ComboBoxItem();
+            customComponent.Content = assets[assets.Count - 1]["name"].ToString();
+            selectedAddedComponent.Items.Add(customComponent);
+                    
+            debugger.Speak("Тип ресурса " + assets[assets.Count - 1]["type"]);
+
+            debugger.Speak("Ресурсов " + assets.Count.ToString());
         }
     }
 

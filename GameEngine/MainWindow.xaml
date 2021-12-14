@@ -101,6 +101,7 @@
             <StackPanel.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Импортировать ресурс" Click="ImportAssetHanler" />
+                    <MenuItem Header="Создать сценарий" Click="CreateScriptAssetHanler" />
                 </ContextMenu>
             </StackPanel.ContextMenu>
             <StackPanel x:Name="projectAssets" Orientation="Horizontal">
