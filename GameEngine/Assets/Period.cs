@@ -24,7 +24,7 @@ namespace GameEngine
             localDebugger = new SpeechSynthesizer();
             SetInterval(() => {
                 elapsedTime++;
-                localDebugger.Speak("прошло секунд: " + elapsedTime.ToString());
+                /*localDebugger.Speak("прошло секунд: " + elapsedTime.ToString());*/
                 updateHook();
             }, TimeSpan.FromSeconds(1));
         }

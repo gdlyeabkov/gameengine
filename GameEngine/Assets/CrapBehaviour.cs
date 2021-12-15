@@ -26,6 +26,11 @@ namespace GameEngine
             localDebugger.Speak("CrapBehaviour Update");
         }
 
+        public virtual void Destroy()
+        {
+            localDebugger.Speak("CrapBehaviour Destroy");
+        }
+
         public CrapBehaviour(int id, string name, Viewport3D viewport)
         {
             this.localDebugger = new SpeechSynthesizer();

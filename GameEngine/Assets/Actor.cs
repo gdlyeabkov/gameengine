@@ -21,14 +21,21 @@ class Actor : CrapBehaviour
 		/*this.localDebugger.Speak("Actor Started as " + id);*/
 		/*Morph.Move(viewport, id, new Vector3D(5, 0, 0));*/
 		/*Morph.Twist(viewport, id, new Vector3D(1, 1, 1), 45);*/
-		Morph.Ratio(viewport, id, new Vector3D(0.2, 0.2, 0.2));
+		/*Morph.Ratio(viewport, id, new Vector3D(0.2, 0.2, 0.2));*/
 	}
 
 	public override void Update()
 	{
-		/*this.localDebugger.Speak("Actor was updated");*/
-		this.localDebugger.Speak("Actor experience is " + experience.ToString());
-		this.localDebugger.Speak("Actor isHero is " + isHero.ToString());
+        /*this.localDebugger.Speak("Actor was updated");*/
+        this.localDebugger.Speak("Actor experience is " + experience.ToString());
+        this.localDebugger.Speak("Actor isHero is " + isHero.ToString());
+        // new Vector3D(Morph.GetLocation(viewport, id).X + 0.1, Morph.GetLocation(viewport, id).Y + 0.1, Morph.GetLocation(viewport, id).Z + 0.1)
+        // Morph.Move(viewport, id, new Vector3D(3, 0, 0));
+    }
+
+	public override void Destroy()
+	{
+		localDebugger.Speak("Actor Destroy");
 	}
 
 }

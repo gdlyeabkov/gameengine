@@ -41,5 +41,14 @@ namespace GameEngine
             currentMeshTransformRotate.ScaleZ = ratios.Z;
         }
 
+        public static Vector3D GetLocation(Viewport3D space, int gameObjectIndex)
+        {
+            ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex]));
+            Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+            Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+            TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+            return new Vector3D(currentMeshTransformTranslate.OffsetX, currentMeshTransformTranslate.OffsetY, currentMeshTransformTranslate.OffsetZ);
+        }
+
     }
 }

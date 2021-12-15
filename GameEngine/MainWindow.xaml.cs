@@ -35,7 +35,7 @@ namespace GameEngine
         public List<Dictionary<String, Object>> assets;
         public bool graphicMode = false;
         public bool isPlay = false;
-
+        public bool isMouseHold = false;
         /*List<ObjectHandle> executedComponents;*/
         List<CrapBehaviour> executedComponents; 
         public SpeechSynthesizer debugger;
@@ -248,14 +248,27 @@ namespace GameEngine
                         inspectorComponentHeaderIcon.Text = "💦";
                     }
                     CheckBox inspectorComponentHeaderIsEnabled = new CheckBox();
+                    inspectorComponentHeaderIsEnabled.DataContext = component["name"].ToString();
                     inspectorComponentHeaderIsEnabled.Margin = new Thickness(5, 0, 5, 0);
-                    inspectorComponentHeaderIsEnabled.IsChecked = true;
+                    inspectorComponentHeaderIsEnabled.IsChecked = ((bool)(component["isActive"]));
+                    inspectorComponentHeaderIsEnabled.Click += ToggleComponeentActive;
                     TextBlock inspectorComponentHeaderLabel = new TextBlock();
                     inspectorComponentHeaderLabel.Margin = new Thickness(5, 0, 5, 0);
                     inspectorComponentHeaderLabel.Text = component["name"].ToString();
+                    TextBlock inspectorComponentHeaderMenu = new TextBlock();
+                    inspectorComponentHeaderMenu.Margin = new Thickness(5, 0, 5, 0);
+                    inspectorComponentHeaderMenu.Text = "⋮";
+                    ContextMenu inspectorComponentHeaderContextMenu = new ContextMenu();
+                    MenuItem inspectorComponentHeaderContextMenuItem = new MenuItem();
+                    inspectorComponentHeaderContextMenuItem.Header = "Удалить компонент";
+                    inspectorComponentHeaderContextMenuItem.DataContext = ((string)(component["name"]));
+                    inspectorComponentHeaderContextMenuItem.Click += RemoveComponentHandler;
+                    inspectorComponentHeaderContextMenu.Items.Add(inspectorComponentHeaderContextMenuItem);
+                    inspectorComponentHeaderMenu.ContextMenu = inspectorComponentHeaderContextMenu;
                     inspectorComponentHeader.Children.Add(inspectorComponentHeaderIcon);
                     inspectorComponentHeader.Children.Add(inspectorComponentHeaderIsEnabled);
                     inspectorComponentHeader.Children.Add(inspectorComponentHeaderLabel);
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderMenu);
 
                     StackPanel inspectorComponentBody = new StackPanel();
                     
@@ -441,6 +454,7 @@ namespace GameEngine
             Dictionary<String, Object> newComponent = new Dictionary<String, Object>();
             /*newComponent.Add("name", "Физика");*/
             newComponent.Add("name", selectedAddedComponent.SelectionBoxItem.ToString());
+            newComponent.Add("isActive", true);
             localComponents.Add(newComponent);
             // debugger.Speak("Добавляю компонент " + components.Count.ToString());
 
@@ -473,14 +487,27 @@ namespace GameEngine
                         inspectorComponentHeaderIcon.Text = "💦";
                     }
                     CheckBox inspectorComponentHeaderIsEnabled = new CheckBox();
+                    inspectorComponentHeaderIsEnabled.DataContext = component["name"].ToString();
+                    inspectorComponentHeaderIsEnabled.Click += ToggleComponeentActive;
                     inspectorComponentHeaderIsEnabled.Margin = new Thickness(5, 0, 5, 0);
                     inspectorComponentHeaderIsEnabled.IsChecked = true;
                     TextBlock inspectorComponentHeaderLabel = new TextBlock();
                     inspectorComponentHeaderLabel.Margin = new Thickness(5, 0, 5, 0);
                     inspectorComponentHeaderLabel.Text = component["name"].ToString();
+                    TextBlock inspectorComponentHeaderMenu = new TextBlock();
+                    inspectorComponentHeaderMenu.Margin = new Thickness(5, 0, 5, 0);
+                    inspectorComponentHeaderMenu.Text = "⋮";
+                    ContextMenu inspectorComponentHeaderContextMenu = new ContextMenu();
+                    MenuItem inspectorComponentHeaderContextMenuItem = new MenuItem();
+                    inspectorComponentHeaderContextMenuItem.Header = "Удалить компонент";
+                    inspectorComponentHeaderContextMenuItem.DataContext = ((string)(component["name"]));
+                    inspectorComponentHeaderContextMenuItem.Click += RemoveComponentHandler;
+                    inspectorComponentHeaderContextMenu.Items.Add(inspectorComponentHeaderContextMenuItem);
+                    inspectorComponentHeaderMenu.ContextMenu = inspectorComponentHeaderContextMenu;
                     inspectorComponentHeader.Children.Add(inspectorComponentHeaderIcon);
                     inspectorComponentHeader.Children.Add(inspectorComponentHeaderIsEnabled);
                     inspectorComponentHeader.Children.Add(inspectorComponentHeaderLabel);
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderMenu);
 
                     StackPanel inspectorComponentBody = new StackPanel();
                     if (component["name"].ToString() == "Трансформация")
@@ -882,6 +909,33 @@ namespace GameEngine
                     }
                 }
             }*/
+            if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0) {
+                if (e.Key == Key.Up)
+                {
+                    mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y, mainCamera.Position.Z + 0.1);
+                }
+                else if (e.Key == Key.Down)
+                {
+                    mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y, mainCamera.Position.Z - 0.1);
+                }
+            } else {
+                if (e.Key == Key.Left)
+                {
+                    mainCamera.Position = new Point3D(mainCamera.Position.X - 0.1, mainCamera.Position.Y, mainCamera.Position.Z);
+                }
+                else if (e.Key == Key.Right)
+                {
+                    mainCamera.Position = new Point3D(mainCamera.Position.X + 0.1, mainCamera.Position.Y, mainCamera.Position.Z);
+                }
+                else if (e.Key == Key.Up)
+                {
+                    mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y + 0.1, mainCamera.Position.Z);
+                }
+                else if (e.Key == Key.Down)
+                {
+                    mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y - 0.1, mainCamera.Position.Z);
+                }
+            }
         }
         private void SetTransformComponentTranslateXPropertyHandler(object sender, KeyEventArgs e)
         {
@@ -1153,9 +1207,52 @@ namespace GameEngine
                             FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
                             foreach (FieldInfo propertyInfo in propertiesInfo)
                             {
+                                string settedComponent = "unknown";
+                                bool isSetComponent = false;
                                 if (propertyInfo.IsPublic)
                                 {
-                                    bool isDrawInputField = propertyInfo.FieldType.ToString() == "System.String" || propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Double" || propertyInfo.FieldType.ToString() == "System.Single";
+                                    /*debugger.Speak("индекс свойства компонента: " + propertiesInfo.ToList().IndexOf(propertyInfo));*/
+                                    foreach (StackPanel localComponent in components.Children)
+                                    {
+                                        foreach (StackPanel localComponentItem in localComponent.Children)
+                                        {
+                                            if (localComponent.Children.IndexOf(localComponentItem) == 0)
+                                            {
+                                                if (((TextBlock)(localComponentItem.Children[0])).Text == component["name"].ToString())
+                                                {
+                                                    /*settedComponent = component["name"].ToString();
+                                                    isSetComponent = true;*/
+                                                }
+                                            }
+                                            else if (localComponent.Children.IndexOf(localComponentItem) == 1 && component["name"].ToString() == ((TextBlock)((StackPanel)(localComponent.Children[0])).Children[2]).Text)
+                                            {
+                                                foreach (StackPanel localComponentSection in localComponentItem.Children)
+                                                {
+                                                    bool isDrawInputField = propertyInfo.FieldType.ToString() == "System.String" || propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Double" || propertyInfo.FieldType.ToString() == "System.Single";
+                                                    bool isDrawCheckbox = propertyInfo.FieldType.ToString() == "System.Boolean";
+                                                    if (isDrawInputField && localComponentSection.Children[1] is TextBox && (propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Single" || propertyInfo.FieldType.ToString() == "System.Double"))
+                                                    {
+                                                        int propertyValue = Int32.Parse(((TextBox)(localComponentSection.Children[1])).Text);
+                                                        propertyInfo.SetValue(executedComponent, propertyValue);
+                                                    }
+                                                    else if (isDrawInputField && localComponentSection.Children[1] is TextBox && propertyInfo.FieldType.ToString() == "System.String")
+                                                    {
+                                                        string propertyValue = ((string)(((TextBox)(localComponentSection.Children[1])).Text));
+                                                        propertyInfo.SetValue(executedComponent, propertyValue);
+                                                    }
+                                                    else if (isDrawCheckbox && localComponentSection.Children[1] is CheckBox)
+                                                    {
+                                                        bool propertyValue = ((bool)((CheckBox)(localComponentSection.Children[1])).IsChecked);
+                                                        propertyInfo.SetValue(executedComponent, propertyValue);
+                                                    }
+                                                    // debugger.Speak("индекс свойства компонента: " + components.Children);
+                                                }
+                                                isSetComponent = true;
+                                            }
+                                            
+                                        }
+                                    }
+                                    /*bool isDrawInputField = propertyInfo.FieldType.ToString() == "System.String" || propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Double" || propertyInfo.FieldType.ToString() == "System.Single";
                                     bool isDrawCheckbox = propertyInfo.FieldType.ToString() == "System.Boolean";
                                     if (isDrawInputField)
                                     {
@@ -1165,7 +1262,7 @@ namespace GameEngine
                                     else if (isDrawCheckbox)
                                     {
                                         propertyInfo.SetValue(executedComponent, false);
-                                    }
+                                    }*/
 
                                 }
                             }
@@ -1179,6 +1276,10 @@ namespace GameEngine
             else if (!isPlay)
             {
                 playBtn.Content = "▶";
+                foreach (CrapBehaviour executedComponent in executedComponents)
+                {
+                    executedComponent.Destroy();
+                }
                 executedComponents.RemoveAll(executedComponent => executedComponent != null);
             }
         }
@@ -1259,6 +1360,333 @@ namespace GameEngine
 
             debugger.Speak("Ресурсов " + assets.Count.ToString());
         }
+
+        private void RemoveComponentHandler(object sender, RoutedEventArgs e)
+        {
+            
+            MenuItem removeComponentBtn = ((MenuItem)(sender));
+            string removedComponentName = removeComponentBtn.DataContext.ToString();
+            debugger.Speak("Удаляю компонент " + removedComponentName);
+
+            Dictionary<String, Object> selectedGameObject = null;
+            foreach (Dictionary<String, Object> gameObject in gameObjects)
+            {
+                if (((bool)(gameObject["isSelected"])))
+                {
+                    selectedGameObject = gameObject;
+                }
+            }
+            List<Dictionary<String, Object>> localComponents = ((List<Dictionary<String, Object>>)(selectedGameObject["components"]));
+            Dictionary<String, Object> removedComponent = localComponents.Where(localComponent => localComponent["name"].ToString() == removedComponentName).ToList()[0];
+            localComponents.Remove(removedComponent);
+
+            components.Children.RemoveRange(0, components.Children.Count);
+            if (localComponents.Count >= 1)
+            {
+                foreach (Dictionary<String, Object> component in localComponents)
+                {
+                    debugger.Speak("Обнаружен компонент " + component["name"].ToString());
+                    StackPanel inspectorComponent = new StackPanel();
+                    StackPanel inspectorComponentHeader = new StackPanel();
+                    inspectorComponentHeader.Orientation = Orientation.Horizontal;
+                    inspectorComponentHeader.Margin = new Thickness(10, 10, 10, 10);
+                    TextBlock inspectorComponentHeaderIcon = new TextBlock();
+                    inspectorComponentHeaderIcon.Margin = new Thickness(5, 0, 5, 0);
+                    if (component["name"].ToString() == "Трансформация")
+                    {
+                        inspectorComponentHeaderIcon.Text = "⤧";
+                    }
+                    else if (component["name"].ToString() == "Физика")
+                    {
+                        inspectorComponentHeaderIcon.Text = "⚛";
+                    }
+                    else if (component["name"].ToString() == "Свет")
+                    {
+                        inspectorComponentHeaderIcon.Text = "💡";
+                    }
+                    else if (component["name"].ToString() == "Система частиц")
+                    {
+                        inspectorComponentHeaderIcon.Text = "💦";
+                    }
+                    CheckBox inspectorComponentHeaderIsEnabled = new CheckBox();
+                    inspectorComponentHeaderIsEnabled.Margin = new Thickness(5, 0, 5, 0);
+                    inspectorComponentHeaderIsEnabled.IsChecked = true;
+                    TextBlock inspectorComponentHeaderLabel = new TextBlock();
+                    inspectorComponentHeaderLabel.Margin = new Thickness(5, 0, 5, 0);
+                    inspectorComponentHeaderLabel.Text = component["name"].ToString();
+                    TextBlock inspectorComponentHeaderMenu = new TextBlock();
+                    inspectorComponentHeaderMenu.Margin = new Thickness(5, 0, 5, 0);
+                    inspectorComponentHeaderMenu.Text = "⋮";
+                    ContextMenu inspectorComponentHeaderContextMenu = new ContextMenu();
+                    MenuItem inspectorComponentHeaderContextMenuItem = new MenuItem();
+                    inspectorComponentHeaderContextMenuItem.Header = "Удалить компонент";
+                    inspectorComponentHeaderContextMenuItem.DataContext = ((string)(component["name"]));
+                    inspectorComponentHeaderContextMenuItem.Click += RemoveComponentHandler;
+                    inspectorComponentHeaderContextMenu.Items.Add(inspectorComponentHeaderContextMenuItem);
+                    inspectorComponentHeaderMenu.ContextMenu = inspectorComponentHeaderContextMenu;
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderIcon);
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderIsEnabled);
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderLabel);
+                    inspectorComponentHeader.Children.Add(inspectorComponentHeaderMenu);
+
+                    StackPanel inspectorComponentBody = new StackPanel();
+
+                    int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
+                    ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
+                    Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
+                    Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
+                    TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+                    RotateTransform3D currentMeshTransformRotate = ((RotateTransform3D)(currentMeshTransform.Children[2]));
+                    ScaleTransform3D currentMeshTransformScale = ((ScaleTransform3D)(currentMeshTransform.Children[1]));
+
+                    if (component["name"].ToString() == "Трансформация")
+                    {
+
+                        StackPanel inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        TextBlock inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Положение";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        TextBox inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformTranslate.OffsetX.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateXPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformTranslate.OffsetY.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateYPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformTranslate.OffsetZ.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateZPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Поворот";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateXPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = "0";
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateYPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = ((AxisAngleRotation3D)(currentMeshTransformRotate.Rotation)).Angle.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateZPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Масштаб";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "X";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformScale.ScaleX.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentScaleXPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Y";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformScale.ScaleY.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentScaleYPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Z";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        inspectorComponentBodyItemInput = new TextBox();
+                        inspectorComponentBodyItemInput.Width = 15;
+                        inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInput.Text = currentMeshTransformScale.ScaleZ.ToString();
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentScaleZPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                    }
+                    else if (component["name"].ToString() == "Физика")
+                    {
+
+                    }
+                    else if (component["name"].ToString() == "Свет")
+                    {
+
+                    }
+                    else if (component["name"].ToString() == "Система частиц")
+                    {
+
+                    }
+                    else
+                    {
+                        // пользовательские компоненты
+
+                        FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
+                        foreach (FieldInfo propertyInfo in propertiesInfo)
+                        {
+                            if (propertyInfo.IsPublic)
+                            {
+                                StackPanel inspectorComponentBodyItem = new StackPanel();
+                                inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                                inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                                TextBlock inspectorComponentBodyItemLabel = new TextBlock();
+                                inspectorComponentBodyItemLabel.Text = propertyInfo.Name;
+                                inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                                inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                                bool isDrawInputField = propertyInfo.FieldType.ToString() == "System.String" || propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Double" || propertyInfo.FieldType.ToString() == "System.Single";
+                                bool isDrawCheckbox = propertyInfo.FieldType.ToString() == "System.Boolean";
+                                if (isDrawInputField)
+                                {
+                                    TextBox inspectorComponentBodyItemInput = new TextBox();
+                                    inspectorComponentBodyItemInput.Width = 50;
+                                    inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                                    inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                                }
+                                else if (isDrawCheckbox)
+                                {
+                                    CheckBox inspectorComponentBodyItemInput = new CheckBox();
+                                    inspectorComponentBodyItemInput.Width = 15;
+                                    inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                                    inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                                }
+
+                                inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                            }
+                        }
+
+                    }
+
+                    inspectorComponent.Children.Add(inspectorComponentHeader);
+                    inspectorComponent.Children.Add(inspectorComponentBody);
+                    components.Children.Add(inspectorComponent);
+                
+                }
+            }
+            else if (localComponents.Count <= 0)
+            {
+                TextBlock notFoundComponents = new TextBlock();
+                notFoundComponents.Text = "Нет прикрепленных компонентов";
+                notFoundComponents.Margin = new Thickness(0, 5, 0, 5);
+                components.Children.Add(notFoundComponents);
+            }
+
+        }
+
+        private void ToggleComponeentActive(object sender, RoutedEventArgs e)
+        {
+            CheckBox checkbox = ((CheckBox)(sender));
+
+            string toggleComponentName = checkbox.DataContext.ToString();
+            
+            Dictionary<String, Object> selectedGameObject = null;
+            foreach (Dictionary<String, Object> gameObject in gameObjects)
+            {
+                if (((bool)(gameObject["isSelected"])))
+                {
+                    selectedGameObject = gameObject;
+                }
+            }
+            List<Dictionary<String, Object>> localComponents = ((List<Dictionary<String, Object>>)(selectedGameObject["components"]));
+            Dictionary<String, Object> toggledComponent = localComponents.Where(localComponent => localComponent["name"].ToString() == toggleComponentName).ToList()[0];
+            toggledComponent["isActive"] = !((bool)(toggledComponent["isActive"]));
+
+            if (((bool)(checkbox.IsChecked)))
+            {
+                debugger.Speak("Включаю компонент " + toggleComponentName);
+            }
+            else if (!((bool)(checkbox.IsChecked)))
+            {
+                debugger.Speak("Отключаю компонент " + toggleComponentName);
+            }
+        }
+
+        private void GlobalMouseDownHandler(object sender, MouseEventArgs e)
+        {
+            isMouseHold = false;
+            /*isMouseHold = true;*/
+        }
+
+        private void GlobalMouseMoveHandler(object sender, MouseEventArgs e)
+        {
+            if (isMouseHold) {
+                mainCamera.LookDirection = new Vector3D(e.GetPosition(scene).X / 1000, e.GetPosition(scene).Y / 1000, -1);
+            }
+        }
+        private void GlobalMouseUpHandler(object sender, MouseEventArgs e)
+        {
+            isMouseHold = false;
+        }
+
 
     }
 

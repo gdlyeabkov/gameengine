@@ -6,6 +6,9 @@ using System.Windows.Controls;
 
 class NetworkLogic: CrapBehaviour
 {
+
+	public int bps = 0;
+
 	public NetworkLogic(int id, string name, Viewport3D viewport) : base(id, name, viewport)
 	{
 	
@@ -19,7 +22,8 @@ class NetworkLogic: CrapBehaviour
 
 	public override void Update()
 	{
-		this.localDebugger.Speak("NetworkLogic was updated");
+		/*this.localDebugger.Speak("NetworkLogic was updated");*/
+		this.localDebugger.Speak("NetworkLogic bps is " + bps.ToString());
 	}
 
 }

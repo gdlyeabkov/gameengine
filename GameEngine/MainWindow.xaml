@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEngine"
         mc:Ignorable="d"
-        WindowState="Maximized" Title="MainWindow" Height="450" Width="800" KeyUp="GlobalHotKeysHandler">
+        WindowState="Maximized" Title="MainWindow" Height="450" Width="800" KeyUp="GlobalHotKeysHandler" MouseMove="GlobalMouseMoveHandler" MouseDown="GlobalMouseDownHandler" MouseUp="GlobalMouseUpHandler">
     <DockPanel>
         <StackPanel x:Name="menuString" DockPanel.Dock="Top" Height="18" Background="Red">
             <Menu Height="18">
@@ -56,47 +56,49 @@
                 </StackPanel>
             </StackPanel>
         </ScrollViewer>
-        <StackPanel x:Name="inspector" DockPanel.Dock="Right" Width="150" Background="Blue">
-            <StackPanel x:Name="components">
+        <ScrollViewer VerticalScrollBarVisibility="Visible" DockPanel.Dock="Right" >
+            <StackPanel x:Name="inspector" Width="150" Background="Blue">
+                <StackPanel x:Name="components">
+                    <!--
+                    <StackPanel Margin="10"  Orientation="Horizontal">
+                        <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
+                        <CheckBox Margin="5, 0, 5, 0" />
+                        <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
+                    </StackPanel>
+                    <StackPanel Margin="10"  Orientation="Horizontal">
+                        <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
+                        <CheckBox Margin="5, 0, 5, 0" />
+                        <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
+                    </StackPanel>
+                    <StackPanel Margin="10"  Orientation="Horizontal">
+                        <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
+                        <CheckBox Margin="5, 0, 5, 0" />
+                        <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
+                    </StackPanel>
+                    <StackPanel Margin="10"  Orientation="Horizontal">
+                        <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
+                        <CheckBox Margin="5, 0, 5, 0" />
+                        <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
+                    </StackPanel>
+                    <StackPanel Margin="10"  Orientation="Horizontal">
+                        <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
+                        <CheckBox Margin="5, 0, 5, 0" />
+                        <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
+                    </StackPanel>
+                    -->
+                </StackPanel>
                 <!--
-                <StackPanel Margin="10"  Orientation="Horizontal">
-                    <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
-                    <CheckBox Margin="5, 0, 5, 0" />
-                    <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
-                </StackPanel>
-                <StackPanel Margin="10"  Orientation="Horizontal">
-                    <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
-                    <CheckBox Margin="5, 0, 5, 0" />
-                    <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
-                </StackPanel>
-                <StackPanel Margin="10"  Orientation="Horizontal">
-                    <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
-                    <CheckBox Margin="5, 0, 5, 0" />
-                    <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
-                </StackPanel>
-                <StackPanel Margin="10"  Orientation="Horizontal">
-                    <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
-                    <CheckBox Margin="5, 0, 5, 0" />
-                    <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
-                </StackPanel>
-                <StackPanel Margin="10"  Orientation="Horizontal">
-                    <TextBlock Margin="5, 0, 5, 0" Text="⚛" />
-                    <CheckBox Margin="5, 0, 5, 0" />
-                    <TextBlock Margin="5, 0, 5, 0" Text="Физика" />
-                </StackPanel>
+                <Button Content="Добавить компонент" Click="AddComponentHandler" />
                 -->
+                <ComboBox x:Name="selectedAddedComponent" Margin="0, 5, 0, 5" Visibility="Collapsed" SelectedIndex="0">
+                    <ComboBoxItem Content="Трансформация" />
+                    <ComboBoxItem Content="Физика" />
+                    <ComboBoxItem Content="Свет" />
+                    <ComboBoxItem Content="Система частиц" />
+                </ComboBox>
+                <Button x:Name="addComponentBtn" Margin="0, 5, 0, 5" Visibility="Collapsed" Content="Добавить компонент" Click="AddComponentHandler" />
             </StackPanel>
-            <!--
-            <Button Content="Добавить компонент" Click="AddComponentHandler" />
-            -->
-            <ComboBox x:Name="selectedAddedComponent" Margin="0, 5, 0, 5" Visibility="Collapsed" SelectedIndex="0">
-                <ComboBoxItem Content="Трансформация" />
-                <ComboBoxItem Content="Физика" />
-                <ComboBoxItem Content="Свет" />
-                <ComboBoxItem Content="Система частиц" />
-            </ComboBox>
-            <Button x:Name="addComponentBtn" Margin="0, 5, 0, 5" Visibility="Collapsed" Content="Добавить компонент" Click="AddComponentHandler" />
-        </StackPanel>
+        </ScrollViewer>
         <StackPanel x:Name="project" DockPanel.Dock="Bottom" Height="100" Background="Green" Orientation="Horizontal">
             <StackPanel.ContextMenu>
                 <ContextMenu>
@@ -104,7 +106,7 @@
                     <MenuItem Header="Создать сценарий" Click="CreateScriptAssetHanler" />
                 </ContextMenu>
             </StackPanel.ContextMenu>
-            <StackPanel x:Name="projectAssets" Orientation="Horizontal">
+            <WrapPanel x:Name="projectAssets" Orientation="Horizontal">
                 <!--
                 <StackPanel HorizontalAlignment="Left" Width="45" Margin="10">
                     <TextBlock HorizontalAlignment="Center" FontSize="36" Text="🖿" />
@@ -127,7 +129,7 @@
                     <TextBlock HorizontalAlignment="Center" Text="icon.png" />
                 </StackPanel>
                 -->
-            </StackPanel>
+            </WrapPanel>
         </StackPanel>
         <StackPanel x:Name="scene" DockPanel.Dock="Bottom" Background="Orange">
             <StackPanel Background="LightGray">
@@ -140,11 +142,12 @@
             </StackPanel>
             <Viewport3D x:Name="space" ClipToBounds="True" Width="1250" Height="1250">
                 <Viewport3D.Camera>
-                    <!--
-                    <PerspectiveCamera x:Name="mainCamera" Position="0,0,5" LookDirection="0,0,-1" />
-                    -->
-                    <OrthographicCamera x:Name="mainCamera" Position="0,0,5" LookDirection="0,0,-1" />
                     
+                    <PerspectiveCamera x:Name="mainCamera" Position="0,0,5" LookDirection="0,0,-1" />
+                    
+                    <!--
+                    <OrthographicCamera x:Name="mainCamera" Position="0,0,5" LookDirection="0,0,-1" />
+                    -->
                 </Viewport3D.Camera>
                 <Viewport3D.Children>
                     <ModelVisual3D>
