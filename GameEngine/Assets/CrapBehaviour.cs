@@ -12,13 +12,18 @@ namespace GameEngine
 {
     public class CrapBehaviour
     {
-        public SpeechSynthesizer localDebugger;
-        public int id;
-        public string name;
-        public Viewport3D viewport;
+        protected SpeechSynthesizer localDebugger;
+        protected int id;
+        protected string name;
+        protected Viewport3D viewport;
         public virtual void Start()
         {
             localDebugger.Speak("CrapBehaviour Start");
+        }
+
+        public virtual void Update()
+        {
+            localDebugger.Speak("CrapBehaviour Update");
         }
 
         public CrapBehaviour(int id, string name, Viewport3D viewport)
@@ -29,6 +34,7 @@ namespace GameEngine
             this.name = name;
             this.viewport = viewport;
             this.Start();
+            Period.StartCountdown(() => this.Update());
         }
         public CrapBehaviour()
         {

@@ -6,8 +6,6 @@ using System.Windows.Controls;
 
 class NetworkLogic: CrapBehaviour
 {
-	public SpeechSynthesizer localDebugger;
-
 	public NetworkLogic(int id, string name, Viewport3D viewport) : base(id, name, viewport)
 	{
 	
@@ -18,5 +16,10 @@ class NetworkLogic: CrapBehaviour
 		this.localDebugger = new SpeechSynthesizer();
 		this.localDebugger.Speak("NetworkLogic Start as " + id);
 	}
-	
+
+	public override void Update()
+	{
+		this.localDebugger.Speak("NetworkLogic was updated");
+	}
+
 }

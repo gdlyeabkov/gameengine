@@ -20,6 +20,8 @@ using FarseerPhysics;
 using System.Diagnostics;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
+using System.Runtime.Remoting;
+using System.Reflection;
 
 namespace GameEngine
 {
@@ -32,6 +34,10 @@ namespace GameEngine
         public List<Dictionary<String, Object>> gameObjects;
         public List<Dictionary<String, Object>> assets;
         public bool graphicMode = false;
+        public bool isPlay = false;
+
+        /*List<ObjectHandle> executedComponents;*/
+        List<CrapBehaviour> executedComponents; 
         public SpeechSynthesizer debugger;
 
         public MainWindow()
@@ -622,7 +628,52 @@ namespace GameEngine
                     }
                     else if (component["name"].ToString() == "Система частиц")
                     {
-                        
+
+                    }
+                    else
+                    {
+                        // пользовательские компоненты
+
+                        FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
+                        foreach (FieldInfo propertyInfo in propertiesInfo)
+                        {
+                            if (propertyInfo.IsPublic)
+                            {
+                                StackPanel inspectorComponentBodyItem = new StackPanel();
+                                inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                                inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                                TextBlock inspectorComponentBodyItemLabel = new TextBlock();
+                                inspectorComponentBodyItemLabel.Text = propertyInfo.Name;
+                                inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                                inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                                bool isDrawInputField = propertyInfo.FieldType.ToString() == "System.String" || propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Double" || propertyInfo.FieldType.ToString() == "System.Single";
+                                bool isDrawCheckbox = propertyInfo.FieldType.ToString() == "System.Boolean";
+                                if (isDrawInputField)
+                                {
+                                    TextBox inspectorComponentBodyItemInput = new TextBox();
+                                    inspectorComponentBodyItemInput.Width = 50;
+                                    inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                                    /*string propertyValue = propertyInfo.GetValue(executedComponents[0]).ToString();
+                                    inspectorComponentBodyItemInput.Text = propertyValue;*/
+                                    // inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateXPropertyHandler;
+                                    inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                                }
+                                else if (isDrawCheckbox)
+                                {
+                                    CheckBox inspectorComponentBodyItemInput = new CheckBox();
+                                    inspectorComponentBodyItemInput.Width = 15;
+                                    inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+                                    /*string propertyValue = propertyInfo.GetValue(executedComponents[0]).ToString();
+                                    inspectorComponentBodyItemInput.Text = propertyValue;*/
+                                    // inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateXPropertyHandler;
+                                    inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
+                                }
+
+                                inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+
+                            }
+                        }
+
                     }
                     inspectorComponent.Children.Add(inspectorComponentHeader);
                     inspectorComponent.Children.Add(inspectorComponentBody);
@@ -1042,16 +1093,93 @@ namespace GameEngine
 
         private void PlayHandler(object sender, RoutedEventArgs e)
         {
-            foreach(Dictionary<String, Object> gameObject in gameObjects)
+            
+            /*executedComponents = new List<ObjectHandle>();*/
+            executedComponents = new List<CrapBehaviour>(); 
+
+            Button playBtn = ((Button)(sender));
+            isPlay = !isPlay;
+            if (isPlay)
             {
-                foreach (Dictionary<String, Object> component in ((List<Dictionary<String, Object>>)(gameObject["components"])))
+                playBtn.Content = "⏹";
+
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
                 {
-                    if (assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() >= 1)
+                    foreach (Dictionary<String, Object> component in ((List<Dictionary<String, Object>>)(gameObject["components"])))
                     {
-                        Type componentClass = Type.GetType(component["name"].ToString());
-                        Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), "", space);
+                        if (assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() >= 1)
+                        {
+                            Type componentClass = Type.GetType(component["name"].ToString());
+                            
+                            CrapBehaviour executedComponent = ((CrapBehaviour)Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), "", space));
+
+                            /*FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
+                            foreach (FieldInfo propertyInfo in propertiesInfo)
+                            {
+                                if (propertyInfo.IsPublic)
+                                {
+                                    foreach (StackPanel componentsItem in components.Children)
+                                    {
+                                        foreach (StackPanel componentsItemSection in componentsItem.Children)
+                                        {
+                                            foreach (UIElement componentsItemSectionItem in componentsItemSection.Children)
+                                            {
+                                                if (componentsItemSectionItem is TextBox || componentsItemSectionItem is CheckBox)
+                                                {
+                                                    debugger.Speak(((TextBlock)(((StackPanel)(componentsItem.Children[0])).Children[0])).Text);
+                                                    if (((TextBlock)(((StackPanel)(componentsItem.Children[0])).Children[0])).Text == component["name"].ToString())
+                                                    {
+                                                        bool isDrawInputField = propertyInfo.FieldType.ToString() == "System.String" || propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Double" || propertyInfo.FieldType.ToString() == "System.Single";
+                                                        bool isDrawCheckbox = propertyInfo.FieldType.ToString() == "System.Boolean";
+                                                        if (isDrawInputField && true)
+                                                        {
+                                                            string propertyValue = ((TextBox)(componentsItemSectionItem)).Text;
+                                                            propertyInfo.SetValue(executedComponent, propertyValue);
+
+                                                        }
+                                                        else if (isDrawCheckbox && true)
+                                                        {
+                                                            bool propertyValue = ((bool)((CheckBox)(componentsItemSectionItem)).IsChecked);
+                                                            propertyInfo.SetValue(executedComponent, propertyValue);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }*/
+
+                            FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
+                            foreach (FieldInfo propertyInfo in propertiesInfo)
+                            {
+                                if (propertyInfo.IsPublic)
+                                {
+                                    bool isDrawInputField = propertyInfo.FieldType.ToString() == "System.String" || propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Double" || propertyInfo.FieldType.ToString() == "System.Single";
+                                    bool isDrawCheckbox = propertyInfo.FieldType.ToString() == "System.Boolean";
+                                    if (isDrawInputField)
+                                    {
+                                        propertyInfo.SetValue(executedComponent, 123);
+
+                                    }
+                                    else if (isDrawCheckbox)
+                                    {
+                                        propertyInfo.SetValue(executedComponent, false);
+                                    }
+
+                                }
+                            }
+
+                            executedComponents.Add(executedComponent);
+                        }
                     }
                 }
+
+            }
+            else if (!isPlay)
+            {
+                playBtn.Content = "▶";
+                executedComponents.RemoveAll(executedComponent => executedComponent != null);
             }
         }
 
@@ -1134,5 +1262,7 @@ namespace GameEngine
 
     }
 
+        
 
 }
+
