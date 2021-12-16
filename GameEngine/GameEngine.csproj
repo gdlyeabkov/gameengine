@@ -99,6 +99,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Dialogs\AssetPickerDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\Console.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -112,6 +120,12 @@
     <Compile Include="Assets\GameManager.cs" />
     <Compile Include="Assets\Morph.cs" />
     <Compile Include="Assets\NetworkLogic.cs" />
+    <Compile Include="Dialogs\AssetPickerDialog.xaml.cs">
+      <DependentUpon>AssetPickerDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\Console.xaml.cs">
+      <DependentUpon>Console.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -94,6 +94,15 @@ namespace GameEngine
                     newHierarchyGameObject.Background = System.Windows.Media.Brushes.LightGray;
                 }
                 newHierarchyGameObject.Height = 35;
+
+                ContextMenu newHierarchyGameObjectContextMenu = new ContextMenu();
+                MenuItem newHierarchyGameObjectContextMenuItem = new MenuItem();
+                newHierarchyGameObjectContextMenuItem.Header = "Удалить игровой объект";
+                newHierarchyGameObjectContextMenuItem.DataContext = gameObject["id"].ToString();
+                newHierarchyGameObjectContextMenuItem.Click += RemoveGameObjectHandler;
+                newHierarchyGameObjectContextMenu.Items.Add(newHierarchyGameObjectContextMenuItem);
+                newHierarchyGameObject.ContextMenu = newHierarchyGameObjectContextMenu;
+
                 TextBlock newHierarchyGameObjectToggler = new TextBlock();
                 newHierarchyGameObjectToggler.Text = "⮫";
                 newHierarchyGameObjectToggler.Margin = new Thickness(5, 0, 5, 0);
@@ -246,6 +255,10 @@ namespace GameEngine
                     else if (component["name"].ToString() == "Система частиц")
                     {
                         inspectorComponentHeaderIcon.Text = "💦";
+                    }
+                    else if (component["name"].ToString() == "Звуковое сопровождение")
+                    {
+                        inspectorComponentHeaderIcon.Text = "🕫";
                     }
                     CheckBox inspectorComponentHeaderIsEnabled = new CheckBox();
                     inspectorComponentHeaderIsEnabled.DataContext = component["name"].ToString();
@@ -427,16 +440,52 @@ namespace GameEngine
                     {
                         
                     }
+                    else if (component["name"].ToString() == "Звуковое сопровождение")
+                    {
+                        
+                        StackPanel inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        TextBlock inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Звук";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        Button inspectorComponentBodyItemInputButton = new Button();
+                        inspectorComponentBodyItemInputButton.Width = 15;
+                        inspectorComponentBodyItemInputButton.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInputButton.Content = "...";
+                        inspectorComponentBodyItemInputButton.Click += SetSoundTrackComponentSourcePropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInputButton);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Играть постоянно";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        CheckBox inspectorComponentBodyItemInputCheckBox = new CheckBox();
+                        inspectorComponentBodyItemInputCheckBox.Width = 15;
+                        inspectorComponentBodyItemInputCheckBox.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInputCheckBox.IsChecked = false;
+                        inspectorComponentBodyItemInputCheckBox.Click += SetSoundTrackComponentLoopPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInputCheckBox);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                    }
                     inspectorComponent.Children.Add(inspectorComponentHeader);
                     inspectorComponent.Children.Add(inspectorComponentBody);
                     components.Children.Add(inspectorComponent);
                 }
+
             } else if (localComponents.Count <= 0) {
                 TextBlock notFoundComponents = new TextBlock();
                 notFoundComponents.Text = "Нет прикрепленных компонентов";
                 notFoundComponents.Margin = new Thickness(0, 5, 0, 5);
                 components.Children.Add(notFoundComponents);
             }
+
+            selectedAddedComponent.Visibility = Visibility.Visible;
+            addComponentBtn.Visibility = Visibility.Visible;
 
         }
 
@@ -455,6 +504,7 @@ namespace GameEngine
             /*newComponent.Add("name", "Физика");*/
             newComponent.Add("name", selectedAddedComponent.SelectionBoxItem.ToString());
             newComponent.Add("isActive", true);
+            newComponent.Add("data", new Dictionary<String, Object>());
             localComponents.Add(newComponent);
             // debugger.Speak("Добавляю компонент " + components.Count.ToString());
 
@@ -485,6 +535,10 @@ namespace GameEngine
                     else if (component["name"].ToString() == "Система частиц")
                     {
                         inspectorComponentHeaderIcon.Text = "💦";
+                    }
+                    else if (component["name"].ToString() == "Звуковое сопровождение")
+                    {
+                        inspectorComponentHeaderIcon.Text = "🕫";
                     }
                     CheckBox inspectorComponentHeaderIsEnabled = new CheckBox();
                     inspectorComponentHeaderIsEnabled.DataContext = component["name"].ToString();
@@ -657,6 +711,38 @@ namespace GameEngine
                     {
 
                     }
+                    else if (component["name"].ToString() == "Звуковое сопровождение")
+                    {
+
+                        StackPanel inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        TextBlock inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Звук";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        Button inspectorComponentBodyItemInputButton = new Button();
+                        inspectorComponentBodyItemInputButton.Width = 15;
+                        inspectorComponentBodyItemInputButton.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInputButton.Content = "...";
+                        inspectorComponentBodyItemInputButton.Click += SetSoundTrackComponentSourcePropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInputButton);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                        inspectorComponentBodyItem = new StackPanel();
+                        inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
+                        inspectorComponentBodyItemLabel = new TextBlock();
+                        inspectorComponentBodyItemLabel.Text = "Играть постоянно";
+                        inspectorComponentBodyItemLabel.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
+                        CheckBox inspectorComponentBodyItemInputCheckBox = new CheckBox();
+                        inspectorComponentBodyItemInputCheckBox.Width = 15;
+                        inspectorComponentBodyItemInputCheckBox.Margin = new Thickness(5, 5, 5, 5);
+                        inspectorComponentBodyItemInputCheckBox.IsChecked = false;
+                        inspectorComponentBodyItemInputCheckBox.Click += SetSoundTrackComponentLoopPropertyHandler;
+                        inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInputCheckBox);
+                        inspectorComponentBody.Children.Add(inspectorComponentBodyItem);
+                    }
                     else
                     {
                         // пользовательские компоненты
@@ -740,6 +826,10 @@ namespace GameEngine
                     {
                         assetType = "script";
                     }
+                    else if (file_ext == "mp3")
+                    {
+                        assetType = "audio";
+                    }
                     string file_text = File.ReadAllText(file_name);
 
                     if (assetType != "unknown") {
@@ -750,6 +840,13 @@ namespace GameEngine
                         newAsset.Add("name", file_name.Split(new char[] { '/', '\\' })[file_name.Split(new char[] { '/', '\\' }).Count() - 1].Split(new char[] { '.' })[0]);
                         newAsset.Add("isSelected", false);
                         newAsset.Add("type", assetType);
+                        
+                        newAsset.Add("data", new Dictionary<String, Object>());
+                        if (assetType == "audio")
+                        {
+                            ((Dictionary<String, Object>)(newAsset["data"]))["path"] = file_name.ToString();
+                        }
+
                         assets.Add(newAsset);
 
                         foreach (Dictionary<String, Object> asset in assets)
@@ -762,7 +859,23 @@ namespace GameEngine
                                 projectAsset.Background = System.Windows.Media.Brushes.LightBlue;
                             }
                             TextBlock projectAssetIcon = new TextBlock();
-                            projectAssetIcon.Text = "🖿";
+                            
+                            if (((string)(asset["type"])) == "audio")
+                            {
+                                projectAssetIcon.Text = "🎵";
+                            }
+                            else if (((string)(asset["type"])) == "script")
+                            {
+                                projectAssetIcon.Text = "🗎";
+                            }
+                            else if (((string)(asset["type"])) == "image")
+                            {
+                                projectAssetIcon.Text = "🖼";
+                            } else
+                            {
+                                projectAssetIcon.Text = "🖿";
+                            }
+
                             // projectAssetIcon.Margin = new Thickness(5, 5, 5, 5);
                             projectAssetIcon.HorizontalAlignment = HorizontalAlignment.Center;
                             projectAssetIcon.FontSize = 36;
@@ -937,6 +1050,7 @@ namespace GameEngine
                 }
             }
         }
+        
         private void SetTransformComponentTranslateXPropertyHandler(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter) {
@@ -1161,48 +1275,11 @@ namespace GameEngine
                 {
                     foreach (Dictionary<String, Object> component in ((List<Dictionary<String, Object>>)(gameObject["components"])))
                     {
-                        if (assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() >= 1)
+                        if ((assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() >= 1) && ((bool)(component["isActive"])))
                         {
                             Type componentClass = Type.GetType(component["name"].ToString());
                             
                             CrapBehaviour executedComponent = ((CrapBehaviour)Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), "", space));
-
-                            /*FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
-                            foreach (FieldInfo propertyInfo in propertiesInfo)
-                            {
-                                if (propertyInfo.IsPublic)
-                                {
-                                    foreach (StackPanel componentsItem in components.Children)
-                                    {
-                                        foreach (StackPanel componentsItemSection in componentsItem.Children)
-                                        {
-                                            foreach (UIElement componentsItemSectionItem in componentsItemSection.Children)
-                                            {
-                                                if (componentsItemSectionItem is TextBox || componentsItemSectionItem is CheckBox)
-                                                {
-                                                    debugger.Speak(((TextBlock)(((StackPanel)(componentsItem.Children[0])).Children[0])).Text);
-                                                    if (((TextBlock)(((StackPanel)(componentsItem.Children[0])).Children[0])).Text == component["name"].ToString())
-                                                    {
-                                                        bool isDrawInputField = propertyInfo.FieldType.ToString() == "System.String" || propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Double" || propertyInfo.FieldType.ToString() == "System.Single";
-                                                        bool isDrawCheckbox = propertyInfo.FieldType.ToString() == "System.Boolean";
-                                                        if (isDrawInputField && true)
-                                                        {
-                                                            string propertyValue = ((TextBox)(componentsItemSectionItem)).Text;
-                                                            propertyInfo.SetValue(executedComponent, propertyValue);
-
-                                                        }
-                                                        else if (isDrawCheckbox && true)
-                                                        {
-                                                            bool propertyValue = ((bool)((CheckBox)(componentsItemSectionItem)).IsChecked);
-                                                            propertyInfo.SetValue(executedComponent, propertyValue);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }*/
 
                             FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
                             foreach (FieldInfo propertyInfo in propertiesInfo)
@@ -1232,8 +1309,11 @@ namespace GameEngine
                                                     bool isDrawCheckbox = propertyInfo.FieldType.ToString() == "System.Boolean";
                                                     if (isDrawInputField && localComponentSection.Children[1] is TextBox && (propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Single" || propertyInfo.FieldType.ToString() == "System.Double"))
                                                     {
-                                                        int propertyValue = Int32.Parse(((TextBox)(localComponentSection.Children[1])).Text);
-                                                        propertyInfo.SetValue(executedComponent, propertyValue);
+                                                        if (((TextBox)(localComponentSection.Children[1])).Text.Length >= 1)
+                                                        {
+                                                            int propertyValue = Int32.Parse(((TextBox)(localComponentSection.Children[1])).Text);
+                                                            propertyInfo.SetValue(executedComponent, propertyValue);
+                                                        }
                                                     }
                                                     else if (isDrawInputField && localComponentSection.Children[1] is TextBox && propertyInfo.FieldType.ToString() == "System.String")
                                                     {
@@ -1268,6 +1348,20 @@ namespace GameEngine
                             }
 
                             executedComponents.Add(executedComponent);
+                        } else if ((assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() <= 0) && ((bool)(component["isActive"])))
+                        {
+                            if (component["name"].ToString() == "Звуковое сопровождение")
+                            {
+                                if (((Dictionary<String, Object>)(component["data"])).ContainsKey("source")) {
+                                    // debugger.Speak("ля ля ля");
+                                    // debugger.Speak(((Dictionary<String, Object>)(component["data"]))["source"].ToString());
+                                
+                                    // soundTracker.Source = new Uri("file:///C:/Users/%D0%9F%D0%9A/Downloads/2yxa_ru_speak_imp431472_94005.mp3");
+                                    soundTracker.Source = new Uri(((Dictionary<String, Object>)(component["data"]))["source"].ToString());
+
+                                    soundTracker.Play();
+                                }
+                            }
                         }
                     }
                 }
@@ -1331,7 +1425,24 @@ namespace GameEngine
                     projectAsset.Background = System.Windows.Media.Brushes.LightBlue;
                 }
                 TextBlock projectAssetIcon = new TextBlock();
-                projectAssetIcon.Text = "🖿";
+
+                if (((string)(asset["type"])) == "audio")
+                {
+                    projectAssetIcon.Text = "🎵";
+                }
+                else if (((string)(asset["type"])) == "script")
+                {
+                    projectAssetIcon.Text = "🗎";
+                }
+                else if (((string)(asset["type"])) == "image")
+                {
+                    projectAssetIcon.Text = "🖼";
+                }
+                else
+                {
+                    projectAssetIcon.Text = "🖿";
+                }
+                
                 projectAssetIcon.HorizontalAlignment = HorizontalAlignment.Center;
                 projectAssetIcon.FontSize = 36;
                 projectAssetIcon.Foreground = System.Windows.Media.Brushes.BlueViolet;
@@ -1407,6 +1518,10 @@ namespace GameEngine
                     else if (component["name"].ToString() == "Система частиц")
                     {
                         inspectorComponentHeaderIcon.Text = "💦";
+                    }
+                    else if (component["name"].ToString() == "Звуковое сопровождение")
+                    {
+                        inspectorComponentHeaderIcon.Text = "🕫";
                     }
                     CheckBox inspectorComponentHeaderIsEnabled = new CheckBox();
                     inspectorComponentHeaderIsEnabled.Margin = new Thickness(5, 0, 5, 0);
@@ -1586,6 +1701,10 @@ namespace GameEngine
                     {
 
                     }
+                    else if (component["name"].ToString() == "Звуковое сопровождение")
+                    {
+                        inspectorComponentHeaderIcon.Text = "🕫";
+                    }
                     else
                     {
                         // пользовательские компоненты
@@ -1687,10 +1806,112 @@ namespace GameEngine
             isMouseHold = false;
         }
 
+        private void RemoveGameObjectHandler(object sender, RoutedEventArgs e)
+        {
 
+            Dictionary<String, Object> selectedGameObject = null;
+            foreach (Dictionary<String, Object> gameObject in gameObjects)
+            {
+                if (((bool)(gameObject["isSelected"])))
+                {
+                    selectedGameObject = gameObject;
+                }
+            }
+            debugger.Speak("Удаляю игровой объект " + selectedGameObject["id"].ToString());
+
+            space.Children.RemoveAt(((int)(selectedGameObject["id"])));
+            
+            gameObjects.Remove(selectedGameObject);
+
+            hierarchyGameObjects.Children.RemoveRange(0, hierarchyGameObjects.Children.Count);
+            foreach (Dictionary<String, Object> gameObject in gameObjects)
+            {
+                StackPanel newHierarchyGameObject = new StackPanel();
+                newHierarchyGameObject.Orientation = Orientation.Horizontal;
+                if (((bool)(gameObject["isSelected"])))
+                {
+                    newHierarchyGameObject.Background = System.Windows.Media.Brushes.LightSlateGray;
+                }
+                else
+                {
+                    newHierarchyGameObject.Background = System.Windows.Media.Brushes.LightGray;
+                }
+                newHierarchyGameObject.Height = 35;
+
+                ContextMenu newHierarchyGameObjectContextMenu = new ContextMenu();
+                MenuItem newHierarchyGameObjectContextMenuItem = new MenuItem();
+                newHierarchyGameObjectContextMenuItem.Header = "Удалить игровой объект";
+                newHierarchyGameObjectContextMenuItem.DataContext = gameObject["id"].ToString();
+                newHierarchyGameObjectContextMenuItem.Click += RemoveGameObjectHandler;
+                newHierarchyGameObjectContextMenu.Items.Add(newHierarchyGameObjectContextMenuItem);
+                newHierarchyGameObject.ContextMenu = newHierarchyGameObjectContextMenu;
+
+                TextBlock newHierarchyGameObjectToggler = new TextBlock();
+                newHierarchyGameObjectToggler.Text = "⮫";
+                newHierarchyGameObjectToggler.Margin = new Thickness(5, 0, 5, 0);
+                newHierarchyGameObjectToggler.Width = 15;
+                newHierarchyGameObjectToggler.MouseLeftButtonUp += ToggleGameObjectHandler;
+                TextBlock newHierarchyGameObjectLabel = new TextBlock();
+                newHierarchyGameObjectLabel.Text = "Игровой объект №" + gameObject["id"].ToString();
+                newHierarchyGameObject.Children.Add(newHierarchyGameObjectToggler);
+                newHierarchyGameObject.Children.Add(newHierarchyGameObjectLabel);
+                hierarchyGameObjects.Children.Add(newHierarchyGameObject);
+                newHierarchyGameObject.MouseLeftButtonUp += SelectGameObjectHandler;
+
+            }
+
+            selectedAddedComponent.Visibility = Visibility.Collapsed;
+            addComponentBtn.Visibility = Visibility.Collapsed;
+            components.Children.RemoveRange(0, components.Children.Count);
+
+            for (int gameObjectIdx = 0; gameObjectIdx < gameObjects.Count; gameObjectIdx++)
+            {
+                gameObjects[gameObjectIdx]["id"] = gameObjectIdx + 1;
+            }
+
+        }
+
+        private void SetSoundTrackComponentSourcePropertyHandler(object sender, RoutedEventArgs e)
+        {
+            Dialogs.AssetPickerDialog assetPickerDialog = new Dialogs.AssetPickerDialog(assets, "audio");
+            assetPickerDialog.Show();
+            assetPickerDialog.Closed += GetAssetPickerDataHandler;
+        }
+
+        private void SetSoundTrackComponentLoopPropertyHandler(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void GetAssetPickerDataHandler(object sender, EventArgs e)
+        {
+            Window assetPicker = ((Window)(sender));
+            
+            if (assetPicker.DataContext != null)
+            {
+                /*string pickedAssetName = assetPicker.DataContext.ToString();
+                debugger.Speak("Получаем информацию о ресурсе " + pickedAssetName);*/
+            
+                Dictionary<String, Object> selectedGameObject = null;
+                foreach (Dictionary<String, Object> gameObject in gameObjects)
+                {
+                    if (((bool)(gameObject["isSelected"])))
+                    {
+                        selectedGameObject = gameObject;
+                    }
+                }
+                List<Dictionary<String, Object>> localComponents = ((List<Dictionary<String, Object>>)(selectedGameObject["components"]));
+                Dictionary<String, Object> toggledComponent = localComponents.Where(localComponent => localComponent["name"].ToString() == "Звуковое сопровождение").ToList()[0];
+
+                // ((Dictionary<String, Object>)(toggledComponent["data"]))["source"] = pickedAssetName;
+
+                string pickedAssetPath = assetPicker.DataContext.ToString();
+                // debugger.Speak("Получаем информацию о ресурсе " + pickedAssetPath);
+                ((Dictionary<String, Object>)(toggledComponent["data"]))["source"] = pickedAssetPath;
+            }
+        }
     }
 
-        
 
 }
 

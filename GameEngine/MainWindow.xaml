@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         WindowState="Maximized" Title="MainWindow" Height="450" Width="800" KeyUp="GlobalHotKeysHandler" MouseMove="GlobalMouseMoveHandler" MouseDown="GlobalMouseDownHandler" MouseUp="GlobalMouseUpHandler">
     <DockPanel>
+        <MediaElement x:Name="soundTracker" LoadedBehavior="Manual" />
         <StackPanel x:Name="menuString" DockPanel.Dock="Top" Height="18" Background="Red">
             <Menu Height="18">
                 <MenuItem Header="Файл">
@@ -20,6 +21,7 @@
                 </MenuItem>
                 <MenuItem Header="Окна">
                     <MenuItem Header="Иерархия" Click="ImportAssetHanler" />
+                    <MenuItem Header="Консоль" Click="ImportAssetHanler" />
                 </MenuItem>
             </Menu>
         </StackPanel>
@@ -95,6 +97,7 @@
                     <ComboBoxItem Content="Физика" />
                     <ComboBoxItem Content="Свет" />
                     <ComboBoxItem Content="Система частиц" />
+                    <ComboBoxItem Content="Звуковое сопровождение" />
                 </ComboBox>
                 <Button x:Name="addComponentBtn" Margin="0, 5, 0, 5" Visibility="Collapsed" Content="Добавить компонент" Click="AddComponentHandler" />
             </StackPanel>

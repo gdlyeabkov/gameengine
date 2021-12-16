@@ -96,3 +96,7 @@ C:\wpf_projects\GameEngine\GameEngine\bin\Debug\tr\Microsoft.CodeAnalysis.Script
 C:\wpf_projects\GameEngine\GameEngine\bin\Debug\zh-Hans\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\wpf_projects\GameEngine\GameEngine\bin\Debug\zh-Hant\Microsoft.CodeAnalysis.Scripting.resources.dll
 C:\wpf_projects\GameEngine\GameEngine\obj\Debug\GameEngine.GeneratedMSBuildEditorConfig.editorconfig
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\Dialogs\AssetPickerDialog.g.cs
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\Dialogs\Console.g.cs
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\Dialogs\AssetPickerDialog.baml
+C:\wpf_projects\GameEngine\GameEngine\obj\Debug\Dialogs\Console.baml
