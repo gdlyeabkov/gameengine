@@ -5,8 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEngine.Dialogs"
         mc:Ignorable="d"
-        Title="Консоль" Height="450" Width="800">
+        Title="Консоль" Height="200" Width="800">
     <Grid>
-        
+        <Grid.RowDefinitions>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <ScrollViewer Grid.Row="0" Grid.Column="0">
+            <StackPanel x:Name="logs" Background="LightSlateGray">
+                <!--
+                <StackPanel Background="LightGray" Height="35" Orientation="Horizontal">
+                    <TextBlock Text="⚠" Margin="15, 5" VerticalAlignment="Center" FontSize="18" />
+                    <TextBlock Text="ansdoasnd oinasdoi asdin" Margin="15, 0" VerticalAlignment="Top" />
+                </StackPanel>
+                -->
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>

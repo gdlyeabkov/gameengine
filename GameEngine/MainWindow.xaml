@@ -21,7 +21,7 @@
                 </MenuItem>
                 <MenuItem Header="Окна">
                     <MenuItem Header="Иерархия" Click="ImportAssetHanler" />
-                    <MenuItem Header="Консоль" Click="ImportAssetHanler" />
+                    <MenuItem Header="Консоль" Click="OpenConsoleHanler" />
                 </MenuItem>
             </Menu>
         </StackPanel>
@@ -61,6 +61,7 @@
         <ScrollViewer VerticalScrollBarVisibility="Visible" DockPanel.Dock="Right" >
             <StackPanel x:Name="inspector" Width="150" Background="Blue">
                 <StackPanel x:Name="components">
+                    <TextBlock />
                     <!--
                     <StackPanel Margin="10"  Orientation="Horizontal">
                         <TextBlock Margin="5, 0, 5, 0" Text="⚛" />

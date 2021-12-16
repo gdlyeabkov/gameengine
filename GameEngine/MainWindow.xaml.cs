@@ -37,7 +37,8 @@ namespace GameEngine
         public bool isPlay = false;
         public bool isMouseHold = false;
         /*List<ObjectHandle> executedComponents;*/
-        List<CrapBehaviour> executedComponents; 
+        List<CrapBehaviour> executedComponents;
+        List<Dictionary<String, Object>> logs;
         public SpeechSynthesizer debugger;
 
         public MainWindow()
@@ -46,6 +47,7 @@ namespace GameEngine
 
             gameObjects = new List<Dictionary<String, Object>>();
             assets = new List<Dictionary<String, Object>>();
+            logs = new List<Dictionary<String, Object>>();
             debugger = new SpeechSynthesizer();
 
         }
@@ -73,6 +75,7 @@ namespace GameEngine
             Dictionary<String, Object> newGameObject = new Dictionary<String, Object>();
             int gameObjectId = gameObjects.Count + 1;
             newGameObject.Add("id", gameObjectId);
+            newGameObject.Add("name", "Игровой объект №" + gameObjectId.ToString());
             newGameObject.Add("isSelected", true);
             List<Dictionary<String, Object>> localComponents = new List<Dictionary<String, Object>>();
             /*Dictionary<String, Object> defautlTransformComponent = new Dictionary<String, Object>();
@@ -86,6 +89,9 @@ namespace GameEngine
             {
                 StackPanel newHierarchyGameObject = new StackPanel();
                 newHierarchyGameObject.Orientation = Orientation.Horizontal;
+
+                hierarchyGameObjects.Children.Add(newHierarchyGameObject);
+
                 if (((bool)(gameObject["isSelected"])))
                 {
                     newHierarchyGameObject.Background = System.Windows.Media.Brushes.LightSlateGray;
@@ -101,6 +107,11 @@ namespace GameEngine
                 newHierarchyGameObjectContextMenuItem.DataContext = gameObject["id"].ToString();
                 newHierarchyGameObjectContextMenuItem.Click += RemoveGameObjectHandler;
                 newHierarchyGameObjectContextMenu.Items.Add(newHierarchyGameObjectContextMenuItem);
+                newHierarchyGameObjectContextMenuItem = new MenuItem();
+                newHierarchyGameObjectContextMenuItem.Header = "Переименовать игровой объект";
+                newHierarchyGameObjectContextMenuItem.DataContext = ((int)(gameObjects.IndexOf(gameObject)));
+                newHierarchyGameObjectContextMenuItem.Click += RenameGameObjectHandler;
+                newHierarchyGameObjectContextMenu.Items.Add(newHierarchyGameObjectContextMenuItem);
                 newHierarchyGameObject.ContextMenu = newHierarchyGameObjectContextMenu;
 
                 TextBlock newHierarchyGameObjectToggler = new TextBlock();
@@ -108,11 +119,26 @@ namespace GameEngine
                 newHierarchyGameObjectToggler.Margin = new Thickness(5, 0, 5, 0);
                 newHierarchyGameObjectToggler.Width = 15;
                 newHierarchyGameObjectToggler.MouseLeftButtonUp += ToggleGameObjectHandler;
-                TextBlock newHierarchyGameObjectLabel = new TextBlock();
-                newHierarchyGameObjectLabel.Text = "Игровой объект №" + gameObject["id"].ToString();
+
                 newHierarchyGameObject.Children.Add(newHierarchyGameObjectToggler);
-                newHierarchyGameObject.Children.Add(newHierarchyGameObjectLabel);
-                hierarchyGameObjects.Children.Add(newHierarchyGameObject);
+
+                // TextBlock newHierarchyGameObjectLabel = new TextBlock();
+                if (gameObjectId == ((int)(gameObject["id"]))) {
+                    TextBox newHierarchyGameObjectLabel = new TextBox();
+                    newHierarchyGameObjectLabel.Text = "Игровой объект №" + gameObject["id"].ToString();
+                    newHierarchyGameObjectLabel.KeyUp += EditGameObjectNameHandler;
+                    newHierarchyGameObjectLabel.LostKeyboardFocus += ResetRenameGameObjectHandler;
+                    newHierarchyGameObject.Children.Add(newHierarchyGameObjectLabel);
+                    newHierarchyGameObjectLabel.Focus();
+                    // Keyboard.Focus(newHierarchyGameObjectLabel);
+                } else
+                {
+                    TextBlock newHierarchyGameObjectLabel = new TextBlock();
+                    // newHierarchyGameObjectLabel.Text = "Игровой объект №" + gameObject["id"].ToString();
+                    newHierarchyGameObjectLabel.Text = gameObject["name"].ToString(); 
+                    newHierarchyGameObject.Children.Add(newHierarchyGameObjectLabel);
+                }
+                
                 newHierarchyGameObject.MouseLeftButtonUp += SelectGameObjectHandler;
             }
 
@@ -1910,6 +1936,55 @@ namespace GameEngine
                 ((Dictionary<String, Object>)(toggledComponent["data"]))["source"] = pickedAssetPath;
             }
         }
+
+        private void OpenConsoleHanler(object sender, RoutedEventArgs e)
+        {
+            Dialogs.Console console = new Dialogs.Console(logs);
+            console.Show();
+        }
+
+        private void EditGameObjectNameHandler(object sender, KeyEventArgs e)
+        {
+            TextBox hierarchyGameObject = ((TextBox)(sender));
+            if (e.Key == Key.Enter)
+            {
+                int edditedGameObjectIdx = hierarchyGameObjects.Children.IndexOf(((StackPanel)(hierarchyGameObject.Parent)));
+                debugger.Speak(edditedGameObjectIdx.ToString());
+                ((Dictionary<String, Object>)(gameObjects[edditedGameObjectIdx]))["name"] = hierarchyGameObject.Text;
+                TextBlock edittedHierarchyGameObject = new TextBlock();
+                edittedHierarchyGameObject.Text = ((Dictionary<String, Object>)(gameObjects[edditedGameObjectIdx]))["name"].ToString();
+                // ((TextBox)(((StackPanel)(hierarchyGameObjects.Children[edditedGameObjectIdx])).Children[1])).LostKeyboardFocus -= ResetRenameGameObjectHandler;
+                hierarchyGameObject.LostKeyboardFocus -= ResetRenameGameObjectHandler;
+                ((StackPanel)(hierarchyGameObjects.Children[edditedGameObjectIdx])).Children.RemoveAt(1);
+                ((StackPanel)(hierarchyGameObjects.Children[edditedGameObjectIdx])).Children.Add(edittedHierarchyGameObject);
+            }
+        }
+
+        private void ResetRenameGameObjectHandler(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            TextBox hierarchyGameObject = ((TextBox)(sender));
+            int edditedGameObjectIdx = hierarchyGameObjects.Children.IndexOf(((StackPanel)(hierarchyGameObject.Parent)));
+            debugger.Speak(edditedGameObjectIdx.ToString());
+            TextBlock edittedHierarchyGameObject = new TextBlock();
+            edittedHierarchyGameObject.Text = ((Dictionary<String, Object>)(gameObjects[edditedGameObjectIdx]))["name"].ToString();
+            ((StackPanel)(hierarchyGameObjects.Children[edditedGameObjectIdx])).Children.RemoveAt(1);
+            ((StackPanel)(hierarchyGameObjects.Children[edditedGameObjectIdx])).Children.Add(edittedHierarchyGameObject);
+        }
+
+        private void RenameGameObjectHandler(object sender, RoutedEventArgs e)
+        {
+            MenuItem edditedGameObject = ((MenuItem)(sender));
+            int edditedGameObjectIdx = ((int)(edditedGameObject.DataContext));
+            debugger.Speak(edditedGameObjectIdx.ToString());
+            TextBox edittedHierarchyGameObject = new TextBox();
+            edittedHierarchyGameObject.Text = ((Dictionary<String, Object>)(gameObjects[edditedGameObjectIdx]))["name"].ToString();
+            edittedHierarchyGameObject.KeyUp += EditGameObjectNameHandler;
+            edittedHierarchyGameObject.LostKeyboardFocus += ResetRenameGameObjectHandler;
+            ((StackPanel)(hierarchyGameObjects.Children[edditedGameObjectIdx])).Children.RemoveAt(1);
+            ((StackPanel)(hierarchyGameObjects.Children[edditedGameObjectIdx])).Children.Add(edittedHierarchyGameObject);
+            edittedHierarchyGameObject.Focus();
+        }
+        
     }
 
 
