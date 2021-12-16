@@ -120,6 +120,7 @@
     <Compile Include="Assets\GameManager.cs" />
     <Compile Include="Assets\Morph.cs" />
     <Compile Include="Assets\NetworkLogic.cs" />
+    <Compile Include="Assets\Paint.cs" />
     <Compile Include="Dialogs\AssetPickerDialog.xaml.cs">
       <DependentUpon>AssetPickerDialog.xaml</DependentUpon>
     </Compile>

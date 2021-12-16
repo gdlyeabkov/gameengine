@@ -16,6 +16,7 @@ namespace GameEngine
         protected int id;
         protected string name;
         protected Viewport3D viewport;
+        protected List<Dictionary<String, Object>> components;
         public virtual void Start()
         {
             localDebugger.Speak("CrapBehaviour Start");
@@ -31,13 +32,29 @@ namespace GameEngine
             localDebugger.Speak("CrapBehaviour Destroy");
         }
 
-        public CrapBehaviour(int id, string name, Viewport3D viewport)
+        public Component FetchComponent<Component>()
+        {
+            Component newComponent = ((Component)(Activator.CreateInstance(typeof(Component))));
+            if (components.Where(component => component["name"].ToString() == typeof(Component).Name).Count() >= 1)
+            {
+
+            }
+            else
+            {
+                // logs
+                localDebugger.Speak("добавляю в Логи");
+            }
+            return newComponent;
+        }
+
+        public CrapBehaviour(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components)
         {
             this.localDebugger = new SpeechSynthesizer();
             localDebugger.Speak("CrapBehaviour Constructor");
             this.id = id;
             this.name = name;
             this.viewport = viewport;
+            this.components = components;
             this.Start();
             Period.StartCountdown(() => this.Update());
         }

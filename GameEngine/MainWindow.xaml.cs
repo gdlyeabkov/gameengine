@@ -1305,7 +1305,7 @@ namespace GameEngine
                         {
                             Type componentClass = Type.GetType(component["name"].ToString());
                             
-                            CrapBehaviour executedComponent = ((CrapBehaviour)Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), "", space));
+                            CrapBehaviour executedComponent = ((CrapBehaviour)Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), ((string)(gameObject["name"])), space, ((List<Dictionary<String, Object>>)(gameObject["components"]))));
 
                             FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
                             foreach (FieldInfo propertyInfo in propertiesInfo)
@@ -1417,13 +1417,24 @@ namespace GameEngine
         private void ToggleGraphicModeHandler(object sender, RoutedEventArgs e)
         {
             graphicMode = !graphicMode;
-            if (!graphicMode)
+            if (graphicMode)
             {
                 graphicModeToggler.Content = "2D";
-                
+                Vector3D cameraDirection = ((PerspectiveCamera)(space.Camera)).LookDirection;
+                Point3D cameraPosition = ((PerspectiveCamera)(space.Camera)).Position;
+                OrthographicCamera camera = new OrthographicCamera();
+                camera.LookDirection = cameraDirection;
+                camera.Position = cameraPosition;
+                space.Camera = camera;
             } else
             {
                 graphicModeToggler.Content = "3D";
+                Vector3D cameraDirection = ((OrthographicCamera)(space.Camera)).LookDirection;
+                Point3D cameraPosition = ((OrthographicCamera)(space.Camera)).Position;
+                PerspectiveCamera camera = new PerspectiveCamera();
+                camera.LookDirection = cameraDirection;
+                camera.Position = cameraPosition;
+                space.Camera = camera;
             }
         }
 

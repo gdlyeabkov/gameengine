@@ -13,7 +13,7 @@ namespace GameEngine
         public static int elapsedTime = 0;
         public static async Task SetInterval(Action action, TimeSpan timeout)
         {
-            await Task.Delay(timeout).ConfigureAwait(false);
+            await Task.Delay(timeout).ConfigureAwait(true);
 
             action();
 
@@ -26,7 +26,7 @@ namespace GameEngine
                 elapsedTime++;
                 /*localDebugger.Speak("прошло секунд: " + elapsedTime.ToString());*/
                 updateHook();
-            }, TimeSpan.FromSeconds(1));
+            }, TimeSpan.FromSeconds(0.04));
         }
     }
 }

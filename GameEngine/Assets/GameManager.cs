@@ -3,12 +3,13 @@ using System.IO;
 using GameEngine;
 using System.Speech.Synthesis;
 using System.Windows.Controls;
+using System.Collections.Generic;
 
 class GameManager : CrapBehaviour
 {
 
 	public string genre = "action";
-	public GameManager(int id, string name, Viewport3D viewport) : base(id, name, viewport)
+	public GameManager(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components) : base(id, name, viewport, components)
 	{
 	
 	}
