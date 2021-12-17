@@ -23,6 +23,8 @@ using Microsoft.CodeAnalysis.Scripting;
 using System.Runtime.Remoting;
 using System.Reflection;
 using System.Windows.Media.Animation;
+using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 
 namespace GameEngine
 {
@@ -793,6 +795,9 @@ namespace GameEngine
                                     TextBox inspectorComponentBodyItemInput = new TextBox();
                                     inspectorComponentBodyItemInput.Width = 50;
                                     inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
+
+                                    inspectorComponentBodyItemInput.Text = propertyInfo.GetValue(null).ToString();
+
                                     /*string propertyValue = propertyInfo.GetValue(executedComponents[0]).ToString();
                                     inspectorComponentBodyItemInput.Text = propertyValue;*/
                                     // inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateXPropertyHandler;
@@ -806,6 +811,9 @@ namespace GameEngine
                                     /*string propertyValue = propertyInfo.GetValue(executedComponents[0]).ToString();
                                     inspectorComponentBodyItemInput.Text = propertyValue;*/
                                     // inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateXPropertyHandler;
+
+                                    inspectorComponentBodyItemInput.IsChecked = ((bool)(propertyInfo.GetValue(null)));
+
                                     inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                                 }
 

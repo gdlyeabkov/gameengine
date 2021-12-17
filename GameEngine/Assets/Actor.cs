@@ -11,13 +11,18 @@ using System.Windows.Media;
 class Actor : CrapBehaviour
 {
 
-	public bool isHero = true;
-	public int experience = 50;
+	static public bool isHero = false;
+    static public int experience = 123;
 
 	public Actor(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app, MediaElement player) : base(id, name, viewport, components, graphicMode, app, player)
 	{
 	
 	}
+
+    public Actor()
+    {
+
+    }
 
     public override void Start()
 	{
