@@ -21,5 +21,19 @@ namespace GameEngine
             }
         }
 
+        public static Point3D GetShootLocation(Viewport3D space, bool graphicMode)
+        {
+            Point3D shootLocation = new Point3D(0, 0, 5);
+            if (graphicMode)
+            {
+                shootLocation = ((OrthographicCamera)(space.Camera)).Position;
+            }
+            else if (!graphicMode)
+            {
+                shootLocation = ((PerspectiveCamera)(space.Camera)).Position;
+            }
+            return shootLocation;
+        }
+
     }
 }

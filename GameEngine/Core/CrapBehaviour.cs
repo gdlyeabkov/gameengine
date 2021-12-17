@@ -21,6 +21,8 @@ namespace GameEngine
         protected bool graphicMode;
         protected MainWindow app;
         static Control controlSingltone;
+        protected MediaElement player;
+        static SoundTrack soundTrackSingltone;
 
         public virtual void Start()
         {
@@ -52,7 +54,7 @@ namespace GameEngine
             return newComponent;
         }
 
-        public CrapBehaviour(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app)
+        public CrapBehaviour(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app, MediaElement player)
         {
             this.localDebugger = new SpeechSynthesizer();
             localDebugger.Speak("CrapBehaviour Constructor");
@@ -63,6 +65,8 @@ namespace GameEngine
             this.graphicMode = graphicMode;
             this.app = app;
             controlSingltone = new Control(app);
+            this.player = player;
+            soundTrackSingltone = new SoundTrack(player);
             this.Start();
             Period.StartCountdown(() => this.Update());
         }

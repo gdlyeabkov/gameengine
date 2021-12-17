@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 
 class Actor : CrapBehaviour
 {
@@ -13,7 +14,7 @@ class Actor : CrapBehaviour
 	public bool isHero = true;
 	public int experience = 50;
 
-	public Actor(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app) : base(id, name, viewport, components, graphicMode, app)
+	public Actor(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app, MediaElement player) : base(id, name, viewport, components, graphicMode, app, player)
 	{
 	
 	}
@@ -70,7 +71,7 @@ class Actor : CrapBehaviour
             Morph.Move(viewport, id, new Vector3D(Morph.GetLocation(viewport, id).X + 0.1, Morph.GetLocation(viewport, id).Y, Morph.GetLocation(viewport, id).Z));
         }*/
 
-        if (GameEngine.Control.IsMouseBtn("left", false))
+        /*if (GameEngine.Control.IsMouseBtn("left", false))
         {
             this.localDebugger.Speak("левая клавиша мыши была нажата");
         }
@@ -85,7 +86,7 @@ class Actor : CrapBehaviour
         else
         {
             this.localDebugger.Speak("Клавиша мыши не нажата");
-        }
+        }*/
         /*if (GameEngine.Control.IsMouseBtn("left"))
         {
             Morph.Move(viewport, id, new Vector3D(Morph.GetLocation(viewport, id).X - 0.1, Morph.GetLocation(viewport, id).Y, Morph.GetLocation(viewport, id).Z));
@@ -98,7 +99,33 @@ class Actor : CrapBehaviour
         {
             Morph.Move(viewport, id, new Vector3D(Morph.GetLocation(viewport, id).X + 0.1, Morph.GetLocation(viewport, id).Y, Morph.GetLocation(viewport, id).Z));
         }*/
-
+        /*double randomHorizontX = new Random().NextDouble();
+        double randomHorizontY = new Random().NextDouble();
+        double randomHorizontZ = new Random().NextDouble();
+        Illumination.SetHorizont(viewport, new Vector3D(randomHorizontX, randomHorizontY, -0.612372));*/
+        /*Color lightColor = new Color();
+        lightColor.R = ((byte)(new Random().NextDouble() * 255));
+        lightColor.G = ((byte)(new Random().NextDouble() * 255));
+        lightColor.B = ((byte)(new Random().NextDouble() * 255));
+        Illumination.SetDiffraction(viewport, lightColor);*/
+        // GameEngine.Camera.Move(viewport, new Point3D(GameEngine.Camera.GetShootLocation(viewport, graphicMode).X + 0.01, GameEngine.Camera.GetShootLocation(viewport, graphicMode).Y, GameEngine.Camera.GetShootLocation(viewport, graphicMode).Z),graphicMode);
+        /*if (GameEngine.Control.IsKeyHolded(Key.Left))
+        {
+            GameEngine.Camera.Move(viewport, new Point3D(GameEngine.Camera.GetShootLocation(viewport, graphicMode).X - 0.01, GameEngine.Camera.GetShootLocation(viewport, graphicMode).Y, GameEngine.Camera.GetShootLocation(viewport, graphicMode).Z), graphicMode);
+        }
+        else if (GameEngine.Control.IsKeyHolded(Key.Right))
+        {
+            GameEngine.Camera.Move(viewport, new Point3D(GameEngine.Camera.GetShootLocation(viewport, graphicMode).X + 0.01, GameEngine.Camera.GetShootLocation(viewport, graphicMode).Y, GameEngine.Camera.GetShootLocation(viewport, graphicMode).Z), graphicMode);
+        }
+        else if (GameEngine.Control.IsKeyHolded(Key.Up))
+        {
+            GameEngine.Camera.Move(viewport, new Point3D(GameEngine.Camera.GetShootLocation(viewport, graphicMode).X, GameEngine.Camera.GetShootLocation(viewport, graphicMode).Y + 0.01, GameEngine.Camera.GetShootLocation(viewport, graphicMode).Z), graphicMode);
+        }
+        else if (GameEngine.Control.IsKeyHolded(Key.Down))
+        {
+            GameEngine.Camera.Move(viewport, new Point3D(GameEngine.Camera.GetShootLocation(viewport, graphicMode).X, GameEngine.Camera.GetShootLocation(viewport, graphicMode).Y - 0.01, GameEngine.Camera.GetShootLocation(viewport, graphicMode).Z), graphicMode);
+        }*/
+    
     }
 
 	public override void Destroy()

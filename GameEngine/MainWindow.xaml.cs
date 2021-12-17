@@ -22,6 +22,7 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 using System.Runtime.Remoting;
 using System.Reflection;
+using System.Windows.Media.Animation;
 
 namespace GameEngine
 {
@@ -1311,7 +1312,7 @@ namespace GameEngine
                         {
                             Type componentClass = Type.GetType(component["name"].ToString());
                             
-                            CrapBehaviour executedComponent = ((CrapBehaviour)Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), ((string)(gameObject["name"])), space, ((List<Dictionary<String, Object>>)(gameObject["components"])), ((bool)(graphicMode)), ((MainWindow)(app))));
+                            CrapBehaviour executedComponent = ((CrapBehaviour)Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), ((string)(gameObject["name"])), space, ((List<Dictionary<String, Object>>)(gameObject["components"])), ((bool)(graphicMode)), ((MainWindow)(app)), ((MediaElement)(soundTracker))));
 
                             FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
                             foreach (FieldInfo propertyInfo in propertiesInfo)
@@ -1382,12 +1383,24 @@ namespace GameEngine
                             executedComponents.Add(executedComponent);
                         } else if ((assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() <= 0) && ((bool)(component["isActive"])))
                         {
-                            if (component["name"].ToString() == "Звуковое сопровождение")
+                            if (component["name"].ToString() == "Свет")
+                            {
+                                debugger.Speak("запускаю управление светом");
+
+                            }
+                            else if (component["name"].ToString() == "Система частиц")
+                            {
+                                debugger.Speak("запускаю систему частиц");
+
+                                CreateParticleSystem();
+
+                            }
+                            else if (component["name"].ToString() == "Звуковое сопровождение")
                             {
                                 if (((Dictionary<String, Object>)(component["data"])).ContainsKey("source")) {
                                     // debugger.Speak("ля ля ля");
                                     // debugger.Speak(((Dictionary<String, Object>)(component["data"]))["source"].ToString());
-                                
+
                                     // soundTracker.Source = new Uri("file:///C:/Users/%D0%9F%D0%9A/Downloads/2yxa_ru_speak_imp431472_94005.mp3");
                                     soundTracker.Source = new Uri(((Dictionary<String, Object>)(component["data"]))["source"].ToString());
 
@@ -2001,6 +2014,127 @@ namespace GameEngine
             ((StackPanel)(hierarchyGameObjects.Children[edditedGameObjectIdx])).Children.RemoveAt(1);
             ((StackPanel)(hierarchyGameObjects.Children[edditedGameObjectIdx])).Children.Add(edittedHierarchyGameObject);
             edittedHierarchyGameObject.Focus();
+        }
+
+        private void CreateParticleSystem()
+        {
+
+            List <DoubleAnimation> animations = new List<DoubleAnimation>();
+
+            ModelVisual3D gameObjectMesh = new ModelVisual3D();
+            Model3DGroup particleSystem = new Model3DGroup();
+            for (double particleSystemItemIdx = 0; particleSystemItemIdx < new Random().NextDouble(); particleSystemItemIdx += 0.1) {
+            // for (int particleSystemItemIdx = 0; particleSystemItemIdx < 5; particleSystemItemIdx++) {
+                MeshGeometry3D gameObjectMeshGeometry3D = new MeshGeometry3D();
+                Point3DCollection gameObjectMeshPositions = new Point3DCollection();
+                gameObjectMeshPositions.Add(new Point3D(0, 0, 0));
+                gameObjectMeshPositions.Add(new Point3D(1, 0, 0));
+                gameObjectMeshPositions.Add(new Point3D(1, 1, 0));
+                gameObjectMeshPositions.Add(new Point3D(0, 1, 0));
+                gameObjectMeshPositions.Add(new Point3D(0, 0, 1));
+                gameObjectMeshPositions.Add(new Point3D(1, 0, 1));
+                gameObjectMeshPositions.Add(new Point3D(1, 1, 1));
+                gameObjectMeshPositions.Add(new Point3D(0, 1, 1));
+                gameObjectMeshGeometry3D.Positions = gameObjectMeshPositions;
+                Int32Collection gameObjectMeshTriangleIndices = new Int32Collection();
+                gameObjectMeshTriangleIndices.Add(0);
+                gameObjectMeshTriangleIndices.Add(1);
+                gameObjectMeshTriangleIndices.Add(3);
+                gameObjectMeshTriangleIndices.Add(1);
+                gameObjectMeshTriangleIndices.Add(2);
+                gameObjectMeshTriangleIndices.Add(3);
+                gameObjectMeshTriangleIndices.Add(0);
+                gameObjectMeshTriangleIndices.Add(4);
+                gameObjectMeshTriangleIndices.Add(3);
+                gameObjectMeshTriangleIndices.Add(4);
+                gameObjectMeshTriangleIndices.Add(7);
+                gameObjectMeshTriangleIndices.Add(3);
+                gameObjectMeshTriangleIndices.Add(4);
+                gameObjectMeshTriangleIndices.Add(6);
+                gameObjectMeshTriangleIndices.Add(7);
+                gameObjectMeshTriangleIndices.Add(4);
+                gameObjectMeshTriangleIndices.Add(5);
+                gameObjectMeshTriangleIndices.Add(6);
+                gameObjectMeshTriangleIndices.Add(0);
+                gameObjectMeshTriangleIndices.Add(4);
+                gameObjectMeshTriangleIndices.Add(1);
+                gameObjectMeshTriangleIndices.Add(1);
+                gameObjectMeshTriangleIndices.Add(4);
+                gameObjectMeshTriangleIndices.Add(5);
+                gameObjectMeshTriangleIndices.Add(1);
+                gameObjectMeshTriangleIndices.Add(2);
+                gameObjectMeshTriangleIndices.Add(6);
+                gameObjectMeshTriangleIndices.Add(6);
+                gameObjectMeshTriangleIndices.Add(5);
+                gameObjectMeshTriangleIndices.Add(1);
+                gameObjectMeshTriangleIndices.Add(2);
+                gameObjectMeshTriangleIndices.Add(3);
+                gameObjectMeshTriangleIndices.Add(7);
+                gameObjectMeshTriangleIndices.Add(7);
+                gameObjectMeshTriangleIndices.Add(6);
+                gameObjectMeshTriangleIndices.Add(2);
+                gameObjectMeshGeometry3D.TriangleIndices = gameObjectMeshTriangleIndices;
+                GeometryModel3D gameObjectMeshGeometryModel = new GeometryModel3D();
+                gameObjectMeshGeometryModel.Geometry = gameObjectMeshGeometry3D;
+                Transform3DGroup gameObjectMeshTransform = new Transform3DGroup();
+                ScaleTransform3D gameObjectMeshTransformScale = new ScaleTransform3D();
+                double randomScaleX = new Random().NextDouble();
+                double randomScaleY = new Random().NextDouble();
+                double randomScaleZ = new Random().NextDouble();
+                gameObjectMeshTransformScale.ScaleX = 0.05 * randomScaleX;
+                gameObjectMeshTransformScale.ScaleY = 0.05 * randomScaleX;
+                gameObjectMeshTransformScale.ScaleZ = 0.05 * randomScaleX;
+                TranslateTransform3D gameObjectMeshTransformTranslate = new TranslateTransform3D();
+                double randomOffsetX = new Random().NextDouble();
+                double randomOffsetY = new Random().NextDouble();
+                double randomOffsetZ = new Random().NextDouble();
+                gameObjectMeshTransformTranslate.OffsetX = 30 * randomOffsetX;
+                gameObjectMeshTransformTranslate.OffsetY = 30 * randomOffsetY;
+                gameObjectMeshTransformTranslate.OffsetZ = 5 * randomOffsetZ;
+                RotateTransform3D gameObjectMeshTransformRotate = new RotateTransform3D();
+                double randomAngle = new Random().NextDouble();
+                gameObjectMeshTransformRotate.Rotation = new AxisAngleRotation3D(new Vector3D(1, 1, 1), 360 * randomAngle);
+                /*gameObjectMeshTransformRotate.Rotation = new QuaternionRotation3D(new Quaternion(0, 0, 0, 0));*/
+                gameObjectMeshTransform.Children.Add(gameObjectMeshTransformTranslate);
+                gameObjectMeshTransform.Children.Add(gameObjectMeshTransformScale);
+                gameObjectMeshTransform.Children.Add(gameObjectMeshTransformRotate);
+                gameObjectMeshGeometryModel.Transform = gameObjectMeshTransform;
+                MaterialGroup gameObjectMeshMaterialGroup = new MaterialGroup();
+                DiffuseMaterial gameObjectMeshDiffuseMaterial = new DiffuseMaterial();
+                Color gameObjectMeshSolidColor = new Color();
+                gameObjectMeshSolidColor.R = ((byte)(new Random().NextDouble() * 255));
+                gameObjectMeshSolidColor.G = ((byte)(new Random().NextDouble() * 255));
+                gameObjectMeshSolidColor.B = ((byte)(new Random().NextDouble() * 255));
+                gameObjectMeshDiffuseMaterial.Brush = System.Windows.Media.Brushes.Black;
+                // gameObjectMeshDiffuseMaterial.Color = gameObjectMeshSolidColor;
+                gameObjectMeshMaterialGroup.Children.Add(gameObjectMeshDiffuseMaterial);
+                gameObjectMeshGeometryModel.Material = gameObjectMeshMaterialGroup;
+                DoubleAnimation particleSystemItemAnimation = new DoubleAnimation();
+                particleSystemItemAnimation.From = gameObjectMeshTransformTranslate.OffsetX;
+                particleSystemItemAnimation.To = gameObjectMeshTransformTranslate.OffsetX + 5;
+                particleSystemItemAnimation.Duration = TimeSpan.FromSeconds(3);
+                particleSystemItemAnimation.AutoReverse = true;
+                animations.Add(particleSystemItemAnimation);
+                particleSystem.Children.Add(gameObjectMeshGeometryModel);
+            }
+            gameObjectMesh.Content = particleSystem;
+            debugger.Speak("Создано " + particleSystem.Children.Count.ToString() + " частиц");
+            space.Children.Add(gameObjectMesh);
+            /*foreach (DoubleAnimation animation in animations)
+            {
+                particleSystem.Children[animations.IndexOf(animation)].BeginAnimation(TranslateTransform3D.OffsetXProperty, animation);
+            }*/
+            foreach (GeometryModel3D particleSystemItem in particleSystem.Children)
+            {
+                Transform3DGroup currentMeshTransform = ((Transform3DGroup)(particleSystemItem.Transform));
+                TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));
+                DoubleAnimation particleSystemItemAnimation = new DoubleAnimation();
+                particleSystemItemAnimation.From = currentMeshTransformTranslate.OffsetX;
+                particleSystemItemAnimation.To = currentMeshTransformTranslate.OffsetX + 5;
+                particleSystemItemAnimation.Duration = TimeSpan.FromSeconds(3);
+                // particleSystemItemAnimation.AutoReverse = true;
+                particleSystemItem.BeginAnimation(TranslateTransform3D.OffsetXProperty, particleSystemItemAnimation);
+            }
         }
         
     }

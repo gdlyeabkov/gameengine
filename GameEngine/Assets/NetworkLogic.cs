@@ -11,7 +11,7 @@ class NetworkLogic: CrapBehaviour
 
 	public int bps = 0;
 
-	public NetworkLogic(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app) : base(id, name, viewport, components, graphicMode, app)
+	public NetworkLogic(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app, MediaElement player) : base(id, name, viewport, components, graphicMode, app, player)
 	{
 	
 	}

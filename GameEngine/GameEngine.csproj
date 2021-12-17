@@ -116,13 +116,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Assets\Actor.cs" />
-    <Compile Include="Assets\Camera.cs" />
-    <Compile Include="Assets\Control.cs" />
-    <Compile Include="Assets\CrapBehaviour.cs" />
+    <Compile Include="Core\Camera.cs" />
+    <Compile Include="Core\Control.cs" />
+    <Compile Include="Core\CrapBehaviour.cs" />
     <Compile Include="Assets\GameManager.cs" />
-    <Compile Include="Assets\Morph.cs" />
+    <Compile Include="Core\Illumination.cs" />
+    <Compile Include="Core\Morph.cs" />
     <Compile Include="Assets\NetworkLogic.cs" />
-    <Compile Include="Assets\Paint.cs" />
+    <Compile Include="Core\Paint.cs" />
+    <Compile Include="Core\SoundTrack.cs" />
     <Compile Include="Dialogs\AssetPickerDialog.xaml.cs">
       <DependentUpon>AssetPickerDialog.xaml</DependentUpon>
     </Compile>
@@ -135,7 +137,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Period.cs" />
+    <Compile Include="Core\Period.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
