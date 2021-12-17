@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:GameEngine"
         mc:Ignorable="d"
-        WindowState="Maximized" Title="MainWindow" Height="450" Width="800" KeyUp="GlobalHotKeysHandler" MouseMove="GlobalMouseMoveHandler" MouseDown="GlobalMouseDownHandler" MouseUp="GlobalMouseUpHandler">
+        x:Name="app" WindowState="Maximized" Title="MainWindow" Height="450" Width="800" KeyUp="GlobalHotKeysHandler" MouseMove="GlobalMouseMoveHandler" MouseDown="GlobalMouseDownHandler" MouseUp="GlobalMouseUpHandler">
     <DockPanel>
         <MediaElement x:Name="soundTracker" LoadedBehavior="Manual" />
         <StackPanel x:Name="menuString" DockPanel.Dock="Top" Height="18" Background="Red">

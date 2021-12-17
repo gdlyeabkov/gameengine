@@ -10,9 +10,9 @@ namespace GameEngine
 {
     class Paint
     {
-        public static void AssignColour(Viewport3D space, int gameObjectIndex, System.Windows.Media.Brush colour)
+        public static void AssignColour(Viewport3D viewport, int gameObjectIndex, System.Windows.Media.Brush colour)
         {
-            ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex]));
+            ModelVisual3D currentMesh = ((ModelVisual3D)(viewport.Children[gameObjectIndex]));
             GeometryModel3D currentMeshModel = ((GeometryModel3D)(currentMesh.Content));
             MaterialGroup currentMeshMaterialGroup = ((MaterialGroup)(currentMeshModel.Material));
             DiffuseMaterial currentMeshMaterial = new DiffuseMaterial();

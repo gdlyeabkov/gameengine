@@ -10,9 +10,10 @@ namespace GameEngine
 {
     class Morph
     {
-        public static void Move(Viewport3D space, int gameObjectIndex, Vector3D vector)
+
+        public static void Move(Viewport3D viewport, int gameObjectIndex, Vector3D vector)
         {
-            ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex]));
+            ModelVisual3D currentMesh = ((ModelVisual3D)(viewport.Children[gameObjectIndex]));
             Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
             Transform3DGroup currentMeshTransform = ((Transform3DGroup)(currentMeshModel.Transform));
             TranslateTransform3D currentMeshTransformTranslate = ((TranslateTransform3D)(currentMeshTransform.Children[0]));

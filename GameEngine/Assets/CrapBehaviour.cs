@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Speech.Synthesis;
 using System.Windows.Controls;
+using System.Windows;
 
 namespace GameEngine
 {
@@ -17,6 +18,10 @@ namespace GameEngine
         protected string name;
         protected Viewport3D viewport;
         protected List<Dictionary<String, Object>> components;
+        protected bool graphicMode;
+        protected MainWindow app;
+        static Control controlSingltone;
+
         public virtual void Start()
         {
             localDebugger.Speak("CrapBehaviour Start");
@@ -47,7 +52,7 @@ namespace GameEngine
             return newComponent;
         }
 
-        public CrapBehaviour(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components)
+        public CrapBehaviour(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app)
         {
             this.localDebugger = new SpeechSynthesizer();
             localDebugger.Speak("CrapBehaviour Constructor");
@@ -55,6 +60,9 @@ namespace GameEngine
             this.name = name;
             this.viewport = viewport;
             this.components = components;
+            this.graphicMode = graphicMode;
+            this.app = app;
+            controlSingltone = new Control(app);
             this.Start();
             Period.StartCountdown(() => this.Update());
         }
@@ -63,6 +71,11 @@ namespace GameEngine
             this.localDebugger = new SpeechSynthesizer();
             localDebugger.Speak("CrapBehaviour Constructor");
             this.Start();
+        }
+
+        public static implicit operator CrapBehaviour((CrapBehaviour, Window app) v)
+        {
+            throw new NotImplementedException();
         }
     }
 }

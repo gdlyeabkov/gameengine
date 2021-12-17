@@ -116,6 +116,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Assets\Actor.cs" />
+    <Compile Include="Assets\Camera.cs" />
+    <Compile Include="Assets\Control.cs" />
     <Compile Include="Assets\CrapBehaviour.cs" />
     <Compile Include="Assets\GameManager.cs" />
     <Compile Include="Assets\Morph.cs" />

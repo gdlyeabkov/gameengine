@@ -1048,33 +1048,36 @@ namespace GameEngine
                     }
                 }
             }*/
-            if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0) {
-                if (e.Key == Key.Up)
-                {
-                    mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y, mainCamera.Position.Z + 0.1);
-                }
-                else if (e.Key == Key.Down)
-                {
-                    mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y, mainCamera.Position.Z - 0.1);
-                }
-            } else {
-                if (e.Key == Key.Left)
-                {
-                    mainCamera.Position = new Point3D(mainCamera.Position.X - 0.1, mainCamera.Position.Y, mainCamera.Position.Z);
-                }
-                else if (e.Key == Key.Right)
-                {
-                    mainCamera.Position = new Point3D(mainCamera.Position.X + 0.1, mainCamera.Position.Y, mainCamera.Position.Z);
-                }
-                else if (e.Key == Key.Up)
-                {
-                    mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y + 0.1, mainCamera.Position.Z);
-                }
-                else if (e.Key == Key.Down)
-                {
-                    mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y - 0.1, mainCamera.Position.Z);
+            if (!isPlay) {
+                if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0) {
+                    if (e.Key == Key.Up)
+                    {
+                        mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y, mainCamera.Position.Z + 0.1);
+                    }
+                    else if (e.Key == Key.Down)
+                    {
+                        mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y, mainCamera.Position.Z - 0.1);
+                    }
+                } else {
+                    if (e.Key == Key.Left)
+                    {
+                        mainCamera.Position = new Point3D(mainCamera.Position.X - 0.1, mainCamera.Position.Y, mainCamera.Position.Z);
+                    }
+                    else if (e.Key == Key.Right)
+                    {
+                        mainCamera.Position = new Point3D(mainCamera.Position.X + 0.1, mainCamera.Position.Y, mainCamera.Position.Z);
+                    }
+                    else if (e.Key == Key.Up)
+                    {
+                        mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y + 0.1, mainCamera.Position.Z);
+                    }
+                    else if (e.Key == Key.Down)
+                    {
+                        mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y - 0.1, mainCamera.Position.Z);
+                    }
                 }
             }
+
         }
         
         private void SetTransformComponentTranslateXPropertyHandler(object sender, KeyEventArgs e)
@@ -1101,7 +1104,7 @@ namespace GameEngine
 
         private void SetTransformComponentTranslateYPropertyHandler(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && !isPlay)
             {
                 TextBox settedProperty = ((TextBox)(sender));
                 int settedPropertyValue = Int32.Parse(settedProperty.Text);
@@ -1124,7 +1127,7 @@ namespace GameEngine
 
         private void SetTransformComponentTranslateZPropertyHandler(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && !isPlay)
             {
                 TextBox settedProperty = ((TextBox)(sender));
                 int settedPropertyValue = Int32.Parse(settedProperty.Text);
@@ -1147,7 +1150,7 @@ namespace GameEngine
 
         private void SetTransformComponentRotateXPropertyHandler(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && !isPlay)
             {
                 TextBox settedProperty = ((TextBox)(sender));
                 int settedPropertyValue = Int32.Parse(settedProperty.Text);
@@ -1170,7 +1173,7 @@ namespace GameEngine
         }
         private void SetTransformComponentRotateYPropertyHandler(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && !isPlay)
             {
                 TextBox settedProperty = ((TextBox)(sender));
                 int settedPropertyValue = Int32.Parse(settedProperty.Text);
@@ -1194,7 +1197,7 @@ namespace GameEngine
 
         private void SetTransformComponentRotateZPropertyHandler(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && !isPlay)
             {
                 TextBox settedProperty = ((TextBox)(sender));
                 int settedPropertyValue = Int32.Parse(settedProperty.Text);
@@ -1218,7 +1221,7 @@ namespace GameEngine
 
         private void SetTransformComponentScaleXPropertyHandler(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
+            if (e.Key == Key.Enter && !isPlay)
             {
                 TextBox settedProperty = ((TextBox)(sender));
                 int settedPropertyValue = Int32.Parse(settedProperty.Text);
@@ -1295,7 +1298,10 @@ namespace GameEngine
             isPlay = !isPlay;
             if (isPlay)
             {
+                Keyboard.ClearFocus();
                 playBtn.Content = "⏹";
+                playBtn.Focusable = false;
+                this.Focus();
 
                 foreach (Dictionary<String, Object> gameObject in gameObjects)
                 {
@@ -1305,7 +1311,7 @@ namespace GameEngine
                         {
                             Type componentClass = Type.GetType(component["name"].ToString());
                             
-                            CrapBehaviour executedComponent = ((CrapBehaviour)Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), ((string)(gameObject["name"])), space, ((List<Dictionary<String, Object>>)(gameObject["components"]))));
+                            CrapBehaviour executedComponent = ((CrapBehaviour)Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), ((string)(gameObject["name"])), space, ((List<Dictionary<String, Object>>)(gameObject["components"])), ((bool)(graphicMode)), ((MainWindow)(app))));
 
                             FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
                             foreach (FieldInfo propertyInfo in propertiesInfo)
@@ -1395,6 +1401,7 @@ namespace GameEngine
             }
             else if (!isPlay)
             {
+                playBtn.Focusable = true;
                 playBtn.Content = "▶";
                 foreach (CrapBehaviour executedComponent in executedComponents)
                 {
