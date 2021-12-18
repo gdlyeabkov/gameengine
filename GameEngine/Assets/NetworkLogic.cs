@@ -16,6 +16,11 @@ class NetworkLogic: CrapBehaviour
 	
 	}
 
+	public NetworkLogic() : base()
+	{
+
+	}
+
 	public override void Start()
 	{
 		this.localDebugger = new SpeechSynthesizer();

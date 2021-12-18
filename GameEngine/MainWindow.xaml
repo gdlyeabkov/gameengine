@@ -11,7 +11,8 @@
         <StackPanel x:Name="menuString" DockPanel.Dock="Top" Height="18" Background="Red">
             <Menu Height="18">
                 <MenuItem Header="Файл">
-                    <MenuItem Header="Создать игру" Click="ImportAssetHanler" />
+                    <MenuItem Header="Создать игру" Click="CreateGameHanler" />
+                    <MenuItem Header="Открыть игру" Click="OpenGameHanler" />
                 </MenuItem>
                 <MenuItem Header="Правка">
                     <MenuItem Header="Копировать" Click="ImportAssetHanler" />

@@ -10,9 +10,15 @@ class GameManager : CrapBehaviour
 {
 
 	public string genre = "action";
+	
 	public GameManager(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app, MediaElement player) : base(id, name, viewport, components, graphicMode, app, player)
 	{
 	
+	}
+
+	public GameManager() : base()
+	{
+
 	}
 
 	public override void Start()

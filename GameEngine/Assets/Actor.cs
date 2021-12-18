@@ -11,15 +11,16 @@ using System.Windows.Media;
 class Actor : CrapBehaviour
 {
 
-	static public bool isHero = false;
-    static public int experience = 123;
+	public bool isHero = true;
+    public int experience = 777;
+    public static bool isWin = false;
 
 	public Actor(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app, MediaElement player) : base(id, name, viewport, components, graphicMode, app, player)
 	{
 	
 	}
 
-    public Actor()
+    public Actor():base()
     {
 
     }

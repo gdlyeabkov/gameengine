@@ -73,13 +73,10 @@ namespace GameEngine
         public CrapBehaviour()
         {
             this.localDebugger = new SpeechSynthesizer();
-            localDebugger.Speak("CrapBehaviour Constructor");
-            this.Start();
+            // localDebugger.Speak("CrapBehaviour Constructor");
+            localDebugger.Speak("CrapBehaviour Mock Constructor");
+            // this.Start();
         }
 
-        public static implicit operator CrapBehaviour((CrapBehaviour, Window app) v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

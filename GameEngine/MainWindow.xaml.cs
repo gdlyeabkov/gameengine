@@ -99,7 +99,8 @@ namespace GameEngine
                 {
                     newHierarchyGameObject.Background = System.Windows.Media.Brushes.LightSlateGray;
                 }
-                else {
+                else
+                {
                     newHierarchyGameObject.Background = System.Windows.Media.Brushes.LightGray;
                 }
                 newHierarchyGameObject.Height = 35;
@@ -126,7 +127,8 @@ namespace GameEngine
                 newHierarchyGameObject.Children.Add(newHierarchyGameObjectToggler);
 
                 // TextBlock newHierarchyGameObjectLabel = new TextBlock();
-                if (gameObjectId == ((int)(gameObject["id"]))) {
+                if (gameObjectId == ((int)(gameObject["id"])))
+                {
                     TextBox newHierarchyGameObjectLabel = new TextBox();
                     newHierarchyGameObjectLabel.Text = "Игровой объект №" + gameObject["id"].ToString();
                     newHierarchyGameObjectLabel.KeyUp += EditGameObjectNameHandler;
@@ -134,21 +136,22 @@ namespace GameEngine
                     newHierarchyGameObject.Children.Add(newHierarchyGameObjectLabel);
                     newHierarchyGameObjectLabel.Focus();
                     // Keyboard.Focus(newHierarchyGameObjectLabel);
-                } else
+                }
+                else
                 {
                     TextBlock newHierarchyGameObjectLabel = new TextBlock();
                     // newHierarchyGameObjectLabel.Text = "Игровой объект №" + gameObject["id"].ToString();
-                    newHierarchyGameObjectLabel.Text = gameObject["name"].ToString(); 
+                    newHierarchyGameObjectLabel.Text = gameObject["name"].ToString();
                     newHierarchyGameObject.Children.Add(newHierarchyGameObjectLabel);
                 }
-                
+
                 newHierarchyGameObject.MouseLeftButtonUp += SelectGameObjectHandler;
             }
 
             selectedAddedComponent.Visibility = Visibility.Visible;
             addComponentBtn.Visibility = Visibility.Visible;
 
-            components.Children.RemoveRange(0, components.Children.Count); 
+            components.Children.RemoveRange(0, components.Children.Count);
             TextBlock notFoundComponents = new TextBlock();
             notFoundComponents.Text = "Нет прикрепленных компонентов";
             notFoundComponents.Margin = new Thickness(0, 5, 0, 5);
@@ -313,7 +316,7 @@ namespace GameEngine
                     inspectorComponentHeader.Children.Add(inspectorComponentHeaderMenu);
 
                     StackPanel inspectorComponentBody = new StackPanel();
-                    
+
                     int gameObjectIndex = gameObjects.IndexOf(selectedGameObject);
                     ModelVisual3D currentMesh = ((ModelVisual3D)(space.Children[gameObjectIndex + 1]));
                     Model3D currentMeshModel = ((Model3D)(currentMesh.Content));
@@ -459,19 +462,19 @@ namespace GameEngine
                     }
                     else if (component["name"].ToString() == "Физика")
                     {
-                        
+
                     }
                     else if (component["name"].ToString() == "Свет")
                     {
-                        
+
                     }
                     else if (component["name"].ToString() == "Система частиц")
                     {
-                        
+
                     }
                     else if (component["name"].ToString() == "Звуковое сопровождение")
                     {
-                        
+
                         StackPanel inspectorComponentBodyItem = new StackPanel();
                         inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItem.Orientation = Orientation.Horizontal;
@@ -506,7 +509,9 @@ namespace GameEngine
                     components.Children.Add(inspectorComponent);
                 }
 
-            } else if (localComponents.Count <= 0) {
+            }
+            else if (localComponents.Count <= 0)
+            {
                 TextBlock notFoundComponents = new TextBlock();
                 notFoundComponents.Text = "Нет прикрепленных компонентов";
                 notFoundComponents.Margin = new Thickness(0, 5, 0, 5);
@@ -660,7 +665,7 @@ namespace GameEngine
                         inspectorComponentBodyItemInput.Width = 15;
                         inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
                         inspectorComponentBodyItemInput.Text = "0";
-                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateXPropertyHandler; 
+                        inspectorComponentBodyItemInput.KeyUp += SetTransformComponentRotateXPropertyHandler;
                         inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                         inspectorComponentBodyItemLabel = new TextBlock();
                         inspectorComponentBodyItemLabel.Text = "Y";
@@ -730,11 +735,11 @@ namespace GameEngine
                     }
                     else if (component["name"].ToString() == "Физика")
                     {
-                        
+
                     }
                     else if (component["name"].ToString() == "Свет")
                     {
-                        
+
                     }
                     else if (component["name"].ToString() == "Система частиц")
                     {
@@ -779,7 +784,7 @@ namespace GameEngine
                         FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
                         foreach (FieldInfo propertyInfo in propertiesInfo)
                         {
-                            if (propertyInfo.IsPublic)
+                            if (propertyInfo.IsPublic && !propertyInfo.IsStatic)
                             {
                                 StackPanel inspectorComponentBodyItem = new StackPanel();
                                 inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
@@ -790,13 +795,18 @@ namespace GameEngine
                                 inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemLabel);
                                 bool isDrawInputField = propertyInfo.FieldType.ToString() == "System.String" || propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Double" || propertyInfo.FieldType.ToString() == "System.Single";
                                 bool isDrawCheckbox = propertyInfo.FieldType.ToString() == "System.Boolean";
+
                                 if (isDrawInputField)
                                 {
+
+                                    object mockReflectionObj = Activator.CreateInstance(Type.GetType(component["name"].ToString()));
+
                                     TextBox inspectorComponentBodyItemInput = new TextBox();
                                     inspectorComponentBodyItemInput.Width = 50;
                                     inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
 
-                                    inspectorComponentBodyItemInput.Text = propertyInfo.GetValue(null).ToString();
+                                    // inspectorComponentBodyItemInput.Text = propertyInfo.GetValue(null).ToString();
+                                    inspectorComponentBodyItemInput.Text = propertyInfo.GetValue(mockReflectionObj).ToString();
 
                                     /*string propertyValue = propertyInfo.GetValue(executedComponents[0]).ToString();
                                     inspectorComponentBodyItemInput.Text = propertyValue;*/
@@ -805,6 +815,9 @@ namespace GameEngine
                                 }
                                 else if (isDrawCheckbox)
                                 {
+
+                                    object mockReflectionObj = Activator.CreateInstance(Type.GetType(component["name"].ToString()));
+
                                     CheckBox inspectorComponentBodyItemInput = new CheckBox();
                                     inspectorComponentBodyItemInput.Width = 15;
                                     inspectorComponentBodyItemInput.Margin = new Thickness(5, 5, 5, 5);
@@ -812,7 +825,8 @@ namespace GameEngine
                                     inspectorComponentBodyItemInput.Text = propertyValue;*/
                                     // inspectorComponentBodyItemInput.KeyUp += SetTransformComponentTranslateXPropertyHandler;
 
-                                    inspectorComponentBodyItemInput.IsChecked = ((bool)(propertyInfo.GetValue(null)));
+                                    // inspectorComponentBodyItemInput.IsChecked = ((bool)(propertyInfo.GetValue(null)));
+                                    inspectorComponentBodyItemInput.IsChecked = ((bool)(propertyInfo.GetValue(mockReflectionObj)));
 
                                     inspectorComponentBodyItem.Children.Add(inspectorComponentBodyItemInput);
                                 }
@@ -827,7 +841,9 @@ namespace GameEngine
                     inspectorComponent.Children.Add(inspectorComponentBody);
                     components.Children.Add(inspectorComponent);
                 }
-            } else if (localComponents.Count <= 0) {
+            }
+            else if (localComponents.Count <= 0)
+            {
                 TextBlock notFoundComponents = new TextBlock();
                 notFoundComponents.Text = "Нет прикрепленных компонентов";
                 notFoundComponents.Margin = new Thickness(0, 5, 0, 5);
@@ -840,7 +856,7 @@ namespace GameEngine
 
         private void ImportAssetHanler(object sender, RoutedEventArgs e)
         {
-            
+
             OpenFileDialog ofd = new OpenFileDialog();
             /*ofd.DefaultExt = ".png";
             ofd.Filter = "Png images (.png)|*.png";*/
@@ -857,7 +873,8 @@ namespace GameEngine
                     if (file_ext == "png")
                     {
                         assetType = "image";
-                    } else if (file_ext == "cs")
+                    }
+                    else if (file_ext == "cs")
                     {
                         assetType = "script";
                     }
@@ -867,7 +884,8 @@ namespace GameEngine
                     }
                     string file_text = File.ReadAllText(file_name);
 
-                    if (assetType != "unknown") {
+                    if (assetType != "unknown")
+                    {
                         projectAssets.Children.RemoveRange(0, projectAssets.Children.Count);
                         Dictionary<String, Object> newAsset = new Dictionary<String, Object>();
                         int assetId = assets.Count + 1;
@@ -875,7 +893,7 @@ namespace GameEngine
                         newAsset.Add("name", file_name.Split(new char[] { '/', '\\' })[file_name.Split(new char[] { '/', '\\' }).Count() - 1].Split(new char[] { '.' })[0]);
                         newAsset.Add("isSelected", false);
                         newAsset.Add("type", assetType);
-                        
+
                         newAsset.Add("data", new Dictionary<String, Object>());
                         if (assetType == "audio")
                         {
@@ -890,11 +908,12 @@ namespace GameEngine
                             projectAsset.Margin = new Thickness(10, 10, 10, 10);
                             projectAsset.HorizontalAlignment = HorizontalAlignment.Left;
                             projectAsset.Width = 45;
-                            if (((bool)(asset["isSelected"]))) {
+                            if (((bool)(asset["isSelected"])))
+                            {
                                 projectAsset.Background = System.Windows.Media.Brushes.LightBlue;
                             }
                             TextBlock projectAssetIcon = new TextBlock();
-                            
+
                             if (((string)(asset["type"])) == "audio")
                             {
                                 projectAssetIcon.Text = "🎵";
@@ -906,7 +925,8 @@ namespace GameEngine
                             else if (((string)(asset["type"])) == "image")
                             {
                                 projectAssetIcon.Text = "🖼";
-                            } else
+                            }
+                            else
                             {
                                 projectAssetIcon.Text = "🖿";
                             }
@@ -919,14 +939,15 @@ namespace GameEngine
                             /*projectAssetLabel.Text = file_name;*/
                             projectAssetLabel.Text = asset["name"].ToString();
                             // projectAssetLabel.Margin = new Thickness(5, 5, 5, 5);
-                            projectAssetLabel.HorizontalAlignment = HorizontalAlignment.Center; 
+                            projectAssetLabel.HorizontalAlignment = HorizontalAlignment.Center;
                             projectAsset.Children.Add(projectAssetIcon);
                             projectAsset.Children.Add(projectAssetLabel);
                             projectAsset.MouseLeftButtonUp += SelectAssetHandler;
                             projectAssets.Children.Add(projectAsset);
                         }
 
-                        if (assetType == "script") {
+                        if (assetType == "script")
+                        {
                             /*for (int selectedAddedComponentItemIdx = 4; selectedAddedComponentItemIdx < selectedAddedComponent.Items.Count; selectedAddedComponentItemIdx++)
                             {
                                 selectedAddedComponent.Items.RemoveAt(selectedAddedComponentItemIdx);
@@ -941,7 +962,7 @@ namespace GameEngine
                             customComponent.Content = assets[assets.Count - 1]["name"].ToString();
                             selectedAddedComponent.Items.Add(customComponent);
                         }
-                        
+
                         debugger.Speak("Тип ресурса " + assets[assets.Count - 1]["type"]);
 
                     }
@@ -1057,8 +1078,10 @@ namespace GameEngine
                     }
                 }
             }*/
-            if (!isPlay) {
-                if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0) {
+            if (!isPlay)
+            {
+                if ((Keyboard.Modifiers & ModifierKeys.Shift) > 0)
+                {
                     if (e.Key == Key.Up)
                     {
                         mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y, mainCamera.Position.Z + 0.1);
@@ -1067,7 +1090,9 @@ namespace GameEngine
                     {
                         mainCamera.Position = new Point3D(mainCamera.Position.X, mainCamera.Position.Y, mainCamera.Position.Z - 0.1);
                     }
-                } else {
+                }
+                else
+                {
                     if (e.Key == Key.Left)
                     {
                         mainCamera.Position = new Point3D(mainCamera.Position.X - 0.1, mainCamera.Position.Y, mainCamera.Position.Z);
@@ -1088,10 +1113,11 @@ namespace GameEngine
             }
 
         }
-        
+
         private void SetTransformComponentTranslateXPropertyHandler(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter) {
+            if (e.Key == Key.Enter)
+            {
                 TextBox settedProperty = ((TextBox)(sender));
                 int settedPropertyValue = Int32.Parse(settedProperty.Text);
                 Dictionary<String, Object> selectedGameObject = null;
@@ -1299,9 +1325,9 @@ namespace GameEngine
 
         private void PlayHandler(object sender, RoutedEventArgs e)
         {
-            
+
             /*executedComponents = new List<ObjectHandle>();*/
-            executedComponents = new List<CrapBehaviour>(); 
+            executedComponents = new List<CrapBehaviour>();
 
             Button playBtn = ((Button)(sender));
             isPlay = !isPlay;
@@ -1319,7 +1345,7 @@ namespace GameEngine
                         if ((assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() >= 1) && ((bool)(component["isActive"])))
                         {
                             Type componentClass = Type.GetType(component["name"].ToString());
-                            
+
                             CrapBehaviour executedComponent = ((CrapBehaviour)Activator.CreateInstance(componentClass, ((int)(gameObject["id"])), ((string)(gameObject["name"])), space, ((List<Dictionary<String, Object>>)(gameObject["components"])), ((bool)(graphicMode)), ((MainWindow)(app)), ((MediaElement)(soundTracker))));
 
                             FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
@@ -1327,7 +1353,7 @@ namespace GameEngine
                             {
                                 string settedComponent = "unknown";
                                 bool isSetComponent = false;
-                                if (propertyInfo.IsPublic)
+                                if (propertyInfo.IsPublic && !propertyInfo.IsStatic)
                                 {
                                     /*debugger.Speak("индекс свойства компонента: " + propertiesInfo.ToList().IndexOf(propertyInfo));*/
                                     foreach (StackPanel localComponent in components.Children)
@@ -1370,7 +1396,7 @@ namespace GameEngine
                                                 }
                                                 isSetComponent = true;
                                             }
-                                            
+
                                         }
                                     }
                                     /*bool isDrawInputField = propertyInfo.FieldType.ToString() == "System.String" || propertyInfo.FieldType.ToString() == "System.Int32" || propertyInfo.FieldType.ToString() == "System.Int64" || propertyInfo.FieldType.ToString() == "System.Double" || propertyInfo.FieldType.ToString() == "System.Single";
@@ -1389,7 +1415,8 @@ namespace GameEngine
                             }
 
                             executedComponents.Add(executedComponent);
-                        } else if ((assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() <= 0) && ((bool)(component["isActive"])))
+                        }
+                        else if ((assets.Where<Dictionary<String, Object>>((Dictionary<String, Object> asset) => asset["name"].ToString() == component["name"].ToString()).Count() <= 0) && ((bool)(component["isActive"])))
                         {
                             if (component["name"].ToString() == "Свет")
                             {
@@ -1405,7 +1432,8 @@ namespace GameEngine
                             }
                             else if (component["name"].ToString() == "Звуковое сопровождение")
                             {
-                                if (((Dictionary<String, Object>)(component["data"])).ContainsKey("source")) {
+                                if (((Dictionary<String, Object>)(component["data"])).ContainsKey("source"))
+                                {
                                     // debugger.Speak("ля ля ля");
                                     // debugger.Speak(((Dictionary<String, Object>)(component["data"]))["source"].ToString());
 
@@ -1454,7 +1482,8 @@ namespace GameEngine
                 camera.LookDirection = cameraDirection;
                 camera.Position = cameraPosition;
                 space.Camera = camera;
-            } else
+            }
+            else
             {
                 graphicModeToggler.Content = "3D";
                 Vector3D cameraDirection = ((OrthographicCamera)(space.Camera)).LookDirection;
@@ -1469,7 +1498,7 @@ namespace GameEngine
         private void CreateScriptAssetHanler(object sender, RoutedEventArgs e)
         {
             string assetType = "script";
-                
+
             projectAssets.Children.RemoveRange(0, projectAssets.Children.Count);
             Dictionary<String, Object> newAsset = new Dictionary<String, Object>();
             int assetId = assets.Count + 1;
@@ -1507,7 +1536,7 @@ namespace GameEngine
                 {
                     projectAssetIcon.Text = "🖿";
                 }
-                
+
                 projectAssetIcon.HorizontalAlignment = HorizontalAlignment.Center;
                 projectAssetIcon.FontSize = 36;
                 projectAssetIcon.Foreground = System.Windows.Media.Brushes.BlueViolet;
@@ -1528,7 +1557,7 @@ namespace GameEngine
             {
                 using (StreamWriter sw = new StreamWriter(s))
                 {
-                    sw.Write("using System;\nusing GameEngine;\nusing System.Speech.Synthesis;\n\nclass " + assets[assets.Count - 1]["name"].ToString() + " : CrapBehaviour\n{\n\n\tpublic SpeechSynthesizer localDebugger;\n\n\tpublic override void Start()\n\t{\n\t\tthis.localDebugger = new SpeechSynthesizer();\n\t\tthis.localDebugger.Speak(\"Actor Started as \" + name);\n\t}\n\n}");
+                    sw.Write("using System;\nusing GameEngine;\nusing System.Speech.Synthesis;\nusing System.Windows.Media.Media3D;\nusing System.Windows.Controls;\nusing System.Collections.Generic;\n\nusing System.Windows;\nusing System.Windows.Input;\nusing System.Windows.Media;\nclass " + assets[assets.Count - 1]["name"].ToString() + " : CrapBehaviour\n{\n\tpublic " + assets[assets.Count - 1]["name"].ToString() + "(int id, string name, Viewport3D viewport, List<Dictionary<String, Object>> components, bool graphicMode, MainWindow app, MediaElement player) : base(id, name, viewport, components, graphicMode, app, player)\n\t{\n\t\n\t}\n\n\tpublic " + assets[assets.Count - 1]["name"].ToString() + "() : base()\n\t{\n\t\n\t}\n\n\tpublic override void Start()\n\t{\n\t\tthis.localDebugger = new SpeechSynthesizer();\n\t\tthis.localDebugger.Speak(\"" + assets[assets.Count - 1]["name"].ToString() + " Started as \" + name);\n\t}\n\n\tpublic override void Update()\n\t{\n\t\tthis.localDebugger.Speak(\"" + assets[assets.Count - 1]["name"].ToString() + " was updated\");\n\t}\n\n}");
                 }
             }
 
@@ -1539,7 +1568,7 @@ namespace GameEngine
 
         private void RemoveComponentHandler(object sender, RoutedEventArgs e)
         {
-            
+
             MenuItem removeComponentBtn = ((MenuItem)(sender));
             string removedComponentName = removeComponentBtn.DataContext.ToString();
             debugger.Speak("Удаляю компонент " + removedComponentName);
@@ -1777,7 +1806,7 @@ namespace GameEngine
                         FieldInfo[] propertiesInfo = Type.GetType(component["name"].ToString()).GetFields();
                         foreach (FieldInfo propertyInfo in propertiesInfo)
                         {
-                            if (propertyInfo.IsPublic)
+                            if (propertyInfo.IsPublic && !propertyInfo.IsStatic)
                             {
                                 StackPanel inspectorComponentBodyItem = new StackPanel();
                                 inspectorComponentBodyItem.Margin = new Thickness(5, 5, 5, 5);
@@ -1813,7 +1842,7 @@ namespace GameEngine
                     inspectorComponent.Children.Add(inspectorComponentHeader);
                     inspectorComponent.Children.Add(inspectorComponentBody);
                     components.Children.Add(inspectorComponent);
-                
+
                 }
             }
             else if (localComponents.Count <= 0)
@@ -1831,7 +1860,7 @@ namespace GameEngine
             CheckBox checkbox = ((CheckBox)(sender));
 
             string toggleComponentName = checkbox.DataContext.ToString();
-            
+
             Dictionary<String, Object> selectedGameObject = null;
             foreach (Dictionary<String, Object> gameObject in gameObjects)
             {
@@ -1862,7 +1891,8 @@ namespace GameEngine
 
         private void GlobalMouseMoveHandler(object sender, MouseEventArgs e)
         {
-            if (isMouseHold) {
+            if (isMouseHold)
+            {
                 mainCamera.LookDirection = new Vector3D(e.GetPosition(scene).X / 1000, e.GetPosition(scene).Y / 1000, -1);
             }
         }
@@ -1885,7 +1915,7 @@ namespace GameEngine
             debugger.Speak("Удаляю игровой объект " + selectedGameObject["id"].ToString());
 
             space.Children.RemoveAt(((int)(selectedGameObject["id"])));
-            
+
             gameObjects.Remove(selectedGameObject);
 
             hierarchyGameObjects.Children.RemoveRange(0, hierarchyGameObjects.Children.Count);
@@ -1951,12 +1981,12 @@ namespace GameEngine
         private void GetAssetPickerDataHandler(object sender, EventArgs e)
         {
             Window assetPicker = ((Window)(sender));
-            
+
             if (assetPicker.DataContext != null)
             {
                 /*string pickedAssetName = assetPicker.DataContext.ToString();
                 debugger.Speak("Получаем информацию о ресурсе " + pickedAssetName);*/
-            
+
                 Dictionary<String, Object> selectedGameObject = null;
                 foreach (Dictionary<String, Object> gameObject in gameObjects)
                 {
@@ -2027,12 +2057,13 @@ namespace GameEngine
         private void CreateParticleSystem()
         {
 
-            List <DoubleAnimation> animations = new List<DoubleAnimation>();
+            List<DoubleAnimation> animations = new List<DoubleAnimation>();
 
             ModelVisual3D gameObjectMesh = new ModelVisual3D();
             Model3DGroup particleSystem = new Model3DGroup();
-            for (double particleSystemItemIdx = 0; particleSystemItemIdx < new Random().NextDouble(); particleSystemItemIdx += 0.1) {
-            // for (int particleSystemItemIdx = 0; particleSystemItemIdx < 5; particleSystemItemIdx++) {
+            for (double particleSystemItemIdx = 0; particleSystemItemIdx < new Random().NextDouble(); particleSystemItemIdx += 0.1)
+            {
+                // for (int particleSystemItemIdx = 0; particleSystemItemIdx < 5; particleSystemItemIdx++) {
                 MeshGeometry3D gameObjectMeshGeometry3D = new MeshGeometry3D();
                 Point3DCollection gameObjectMeshPositions = new Point3DCollection();
                 gameObjectMeshPositions.Add(new Point3D(0, 0, 0));
@@ -2144,9 +2175,387 @@ namespace GameEngine
                 particleSystemItem.BeginAnimation(TranslateTransform3D.OffsetXProperty, particleSystemItemAnimation);
             }
         }
-        
-    }
 
+        private void CreateGameHanler(object sender, RoutedEventArgs e)
+        {
+            debugger.Speak("Создать игру");
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.FileName = "NewGame";
+            sfd.DefaultExt = ".gam";
+            sfd.Filter = "Game documents (.gam)|*.gam";
+            bool? res = sfd.ShowDialog();
+            if (res != false)
+            {
+
+                using (Stream s = File.Open(sfd.FileName, FileMode.OpenOrCreate))
+                {
+                    using (StreamWriter sw = new StreamWriter(s))
+                    {
+                        foreach (Dictionary<String, Object> gameObject in gameObjects)
+                        {
+                            string attachedComponents = "";
+                            foreach (Dictionary<String, Object> component in ((List<Dictionary<String, Object>>)(gameObject["components"])))
+                            {
+                                string componentData = "";
+                                int componentDataValueIdx = -1;
+                                foreach (String componenetDataItem in ((Dictionary<String, Object>)(component["data"])).Keys)
+                                {
+                                    componentDataValueIdx++;
+                                    string componentDataItemSeparator = "";
+                                    if (componentDataValueIdx < ((Dictionary<String, Object>)(component["data"])).Values.ToArray().Length)
+                                    {
+                                        componentDataItemSeparator = "%";
+                                    }
+                                    componentData += componenetDataItem + "!" + ((Dictionary<String, Object>)(component["data"])).Values.ToArray()[componentDataValueIdx].ToString() + componentDataItemSeparator;
+                                }
+
+                                string componentDataSeparator = "";
+                                if (((List<Dictionary<String, Object>>)(gameObject["components"])).IndexOf(component) < ((List<Dictionary<String, Object>>)(gameObject["components"])).Count - 1)
+                                {
+                                    componentDataSeparator = "@";
+                                }
+
+                                attachedComponents += component["name"] + "~" + component["isActive"] + "~" + componentData + componentDataSeparator;
+                            }
+                            string gameObjectSeparator = "";
+                            if (gameObjects.IndexOf(gameObject) < gameObjects.Count - 1)
+                            {
+                                gameObjectSeparator = ";";
+                            }
+                            sw.Write(gameObject["id"] + "|" + gameObject["name"] + "|" + gameObject["isSelected"] + "|" + attachedComponents + gameObjectSeparator);
+                        }
+                        sw.Write("\n");
+                        foreach (Dictionary<String, Object> asset in assets)
+                        {
+                            string assetSeparator = "";
+                            if (assets.IndexOf(asset) < gameObjects.Count - 1)
+                            {
+                                assetSeparator = ";";
+                            }
+                            sw.Write(asset["id"] + "|" + asset["name"] + "|" + asset["isSelected"] + "|" + asset["type"] + assetSeparator);
+                        }
+
+                    }
+                }
+            }
+
+        }
+
+        private void OpenGameHanler(object sender, RoutedEventArgs e)
+        {
+
+            debugger.Speak("Открыть игру");
+
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.FileName = "NewGame";
+            ofd.DefaultExt = ".gam";
+            ofd.Filter = "Game documents (.gam)|*.gam";
+            bool? res = ofd.ShowDialog();
+            if (res != false)
+            {
+                Stream myStream;
+                if ((myStream = ofd.OpenFile()) != null)
+                {
+                    string file_name = ofd.FileName;
+                    string file_text = File.ReadAllText(file_name);
+
+                    string[] gameElements = file_text.Split(new char[] { '\n' });
+                    foreach (string gameElement in gameElements)
+                    {
+                        if (gameElements.ToList().IndexOf(gameElement) == 0)
+                        {
+                            string[] parsedGameObjects = gameElement.Split(new char[] { ';' });
+                            if (parsedGameObjects.Length >= 2) {
+                                foreach (string parsedGameObject in parsedGameObjects)
+                                {
+                                    string[] parsedGameObjectsElements = parsedGameObject.Split(new char[] { '|' });
+                                    int parsedGameObjectId = 1;
+                                    string parsedGameObjectName = "Игровой объект";
+                                    bool parsedGameObjectSelected = false;
+                                    foreach (string parsedGameObjectsElement in parsedGameObjectsElements)
+                                    {
+                                        if (parsedGameObjectsElements.ToList().IndexOf(parsedGameObjectsElement) == 0)
+                                        {
+                                            // debugger.Speak("id игрового объекта " + parsedGameObjectsElement.ToString());
+                                            parsedGameObjectId = Int32.Parse(parsedGameObjectsElement);
+                                        }
+                                        else if (parsedGameObjectsElements.ToList().IndexOf(parsedGameObjectsElement) == 1)
+                                        {
+                                            // debugger.Speak("имя игрового объекта " + parsedGameObjectsElement.ToString());
+                                            parsedGameObjectName = parsedGameObjectsElement;
+                                        }
+                                        else if (parsedGameObjectsElements.ToList().IndexOf(parsedGameObjectsElement) == 2)
+                                        {
+                                            // debugger.Speak("игровой объект выбран" + parsedGameObjectsElement);
+                                            if (parsedGameObjectsElement == "True")
+                                            {
+                                                parsedGameObjectSelected = true;
+                                            }
+                                            else if (parsedGameObjectsElement == "False")
+                                            {
+                                                parsedGameObjectSelected = false;
+                                            }
+                                            // debugger.Speak("со значением " + parsedGameObjectSelected);
+                                        }
+                                    }
+
+                                    /*foreach (Dictionary<String, Object> gameObject in this.gameObjects)
+                                    {
+                                        gameObject["isSelected"] = false;
+                                    }*/
+                                    Dictionary<String, Object> newGameObject = new Dictionary<String, Object>();
+                                    newGameObject.Add("id", parsedGameObjectId);
+                                    newGameObject.Add("name", parsedGameObjectName);
+                                    newGameObject.Add("isSelected", parsedGameObjectSelected);
+                                    List<Dictionary<String, Object>> localComponents = new List<Dictionary<String, Object>>();
+                                    newGameObject.Add("components", localComponents);
+                                    gameObjects.Add(newGameObject);
+                                    hierarchyGameObjects.Children.RemoveRange(0, hierarchyGameObjects.Children.Count);
+
+                                    selectedAddedComponent.Visibility = Visibility.Visible;
+                                    addComponentBtn.Visibility = Visibility.Visible;
+                                    components.Children.RemoveRange(0, components.Children.Count);
+                                    TextBlock notFoundComponents = new TextBlock();
+                                    notFoundComponents.Text = "Нет прикрепленных компонентов";
+                                    notFoundComponents.Margin = new Thickness(0, 5, 0, 5);
+                                    components.Children.Add(notFoundComponents);
+                                    ModelVisual3D gameObjectMesh = new ModelVisual3D();
+                                    MeshGeometry3D gameObjectMeshGeometry3D = new MeshGeometry3D();
+                                    Point3DCollection gameObjectMeshPositions = new Point3DCollection();
+                                    gameObjectMeshPositions.Add(new Point3D(0, 0, 0));
+                                    gameObjectMeshPositions.Add(new Point3D(1, 0, 0));
+                                    gameObjectMeshPositions.Add(new Point3D(1, 1, 0));
+                                    gameObjectMeshPositions.Add(new Point3D(0, 1, 0));
+                                    gameObjectMeshPositions.Add(new Point3D(0, 0, 1));
+                                    gameObjectMeshPositions.Add(new Point3D(1, 0, 1));
+                                    gameObjectMeshPositions.Add(new Point3D(1, 1, 1));
+                                    gameObjectMeshPositions.Add(new Point3D(0, 1, 1));
+                                    gameObjectMeshGeometry3D.Positions = gameObjectMeshPositions;
+                                    Int32Collection gameObjectMeshTriangleIndices = new Int32Collection();
+                                    gameObjectMeshTriangleIndices.Add(0);
+                                    gameObjectMeshTriangleIndices.Add(1);
+                                    gameObjectMeshTriangleIndices.Add(3);
+                                    gameObjectMeshTriangleIndices.Add(1);
+                                    gameObjectMeshTriangleIndices.Add(2);
+                                    gameObjectMeshTriangleIndices.Add(3);
+                                    gameObjectMeshTriangleIndices.Add(0);
+                                    gameObjectMeshTriangleIndices.Add(4);
+                                    gameObjectMeshTriangleIndices.Add(3);
+                                    gameObjectMeshTriangleIndices.Add(4);
+                                    gameObjectMeshTriangleIndices.Add(7);
+                                    gameObjectMeshTriangleIndices.Add(3);
+                                    gameObjectMeshTriangleIndices.Add(4);
+                                    gameObjectMeshTriangleIndices.Add(6);
+                                    gameObjectMeshTriangleIndices.Add(7);
+                                    gameObjectMeshTriangleIndices.Add(4);
+                                    gameObjectMeshTriangleIndices.Add(5);
+                                    gameObjectMeshTriangleIndices.Add(6);
+                                    gameObjectMeshTriangleIndices.Add(0);
+                                    gameObjectMeshTriangleIndices.Add(4);
+                                    gameObjectMeshTriangleIndices.Add(1);
+                                    gameObjectMeshTriangleIndices.Add(1);
+                                    gameObjectMeshTriangleIndices.Add(4);
+                                    gameObjectMeshTriangleIndices.Add(5);
+                                    gameObjectMeshTriangleIndices.Add(1);
+                                    gameObjectMeshTriangleIndices.Add(2);
+                                    gameObjectMeshTriangleIndices.Add(6);
+                                    gameObjectMeshTriangleIndices.Add(6);
+                                    gameObjectMeshTriangleIndices.Add(5);
+                                    gameObjectMeshTriangleIndices.Add(1);
+                                    gameObjectMeshTriangleIndices.Add(2);
+                                    gameObjectMeshTriangleIndices.Add(3);
+                                    gameObjectMeshTriangleIndices.Add(7);
+                                    gameObjectMeshTriangleIndices.Add(7);
+                                    gameObjectMeshTriangleIndices.Add(6);
+                                    gameObjectMeshTriangleIndices.Add(2);
+                                    gameObjectMeshGeometry3D.TriangleIndices = gameObjectMeshTriangleIndices;
+                                    GeometryModel3D gameObjectMeshGeometryModel = new GeometryModel3D();
+                                    gameObjectMeshGeometryModel.Geometry = gameObjectMeshGeometry3D;
+                                    Transform3DGroup gameObjectMeshTransform = new Transform3DGroup();
+                                    ScaleTransform3D gameObjectMeshTransformScale = new ScaleTransform3D();
+                                    gameObjectMeshTransformScale.ScaleX = 0.1;
+                                    gameObjectMeshTransformScale.ScaleY = 0.1;
+                                    gameObjectMeshTransformScale.ScaleZ = 0.1;
+                                    TranslateTransform3D gameObjectMeshTransformTranslate = new TranslateTransform3D();
+                                    gameObjectMeshTransformTranslate.OffsetX = 0;
+                                    gameObjectMeshTransformTranslate.OffsetY = 0;
+                                    gameObjectMeshTransformTranslate.OffsetZ = 0;
+                                    RotateTransform3D gameObjectMeshTransformRotate = new RotateTransform3D();
+                                    gameObjectMeshTransformRotate.Rotation = new AxisAngleRotation3D(new Vector3D(0, 0, 0), 0);
+                                    /*gameObjectMeshTransformRotate.Rotation = new QuaternionRotation3D(new Quaternion(0, 0, 0, 0));*/
+                                    gameObjectMeshTransform.Children.Add(gameObjectMeshTransformTranslate);
+                                    gameObjectMeshTransform.Children.Add(gameObjectMeshTransformScale);
+                                    gameObjectMeshTransform.Children.Add(gameObjectMeshTransformRotate);
+                                    gameObjectMeshGeometryModel.Transform = gameObjectMeshTransform;
+                                    MaterialGroup gameObjectMeshMaterialGroup = new MaterialGroup();
+                                    DiffuseMaterial gameObjectMeshDiffuseMaterial = new DiffuseMaterial();
+                                    Color gameObjectMeshSolidColor = new Color();
+                                    gameObjectMeshSolidColor.R = 255;
+                                    gameObjectMeshSolidColor.G = 0;
+                                    gameObjectMeshSolidColor.B = 0;
+                                    gameObjectMeshDiffuseMaterial.Brush = System.Windows.Media.Brushes.Red;
+                                    gameObjectMeshMaterialGroup.Children.Add(gameObjectMeshDiffuseMaterial);
+                                    gameObjectMeshGeometryModel.Material = gameObjectMeshMaterialGroup;
+                                    gameObjectMesh.Content = gameObjectMeshGeometryModel;
+                                    space.Children.Add(gameObjectMesh);
+                                    debugger.Speak(space.Children.Count.ToString());
+
+                                }
+                            }
+                        }
+                        else if (gameElements.ToList().IndexOf(gameElement) == 1)
+                        {
+                            debugger.Speak("Вывожу ресурсы");
+                            string[] parsedAssets = gameElement.Split(new char[] { ';' });
+                            foreach (string parsedAsset in parsedAssets)
+                            {
+                                string[] parsedGameObjectsElements = parsedAsset.Split(new char[] { '|' });
+                                int parsedAssetId = 1;
+                                string parsedAssetName = "Новый ресурс";
+                                bool parsedAssetSelected = false;
+                                string parsedAssetType = "unknown";
+                                foreach (string parsedGameObjectsElement in parsedGameObjectsElements)
+                                {
+                                    if (parsedGameObjectsElements.ToList().IndexOf(parsedGameObjectsElement) == 0)
+                                    {
+                                        // debugger.Speak("id ресурса" + parsedGameObjectsElement.ToString());
+                                        parsedAssetId = Int32.Parse(parsedGameObjectsElement);
+                                    }
+                                    else if (parsedGameObjectsElements.ToList().IndexOf(parsedGameObjectsElement) == 1)
+                                    {
+                                        // debugger.Speak("имя ресурса" + parsedGameObjectsElement.ToString());
+                                        parsedAssetName = parsedGameObjectsElement;
+                                    }
+                                    else if (parsedGameObjectsElements.ToList().IndexOf(parsedGameObjectsElement) == 2)
+                                    {
+                                        // debugger.Speak("ресурс выбран" + parsedGameObjectsElement);
+                                        if (parsedGameObjectsElement == "True")
+                                        {
+                                            parsedAssetSelected = true;
+                                        }
+                                        else if (parsedGameObjectsElement == "False")
+                                        {
+                                            parsedAssetSelected = false;
+                                        }
+                                    }
+                                    else if (parsedGameObjectsElements.ToList().IndexOf(parsedGameObjectsElement) == 3)
+                                    {
+                                        // debugger.Speak("тип ресурса" + parsedGameObjectsElement.ToString());
+                                        parsedAssetType = parsedGameObjectsElement;
+                                    }
+                                }
+                                if (parsedAssetType != "unknown")
+                                {
+                                    projectAssets.Children.RemoveRange(0, projectAssets.Children.Count);
+                                    Dictionary<String, Object> newAsset = new Dictionary<String, Object>();
+                                    int assetId = assets.Count + 1;
+                                    newAsset.Add("id", parsedAssetId);
+                                    newAsset.Add("name", parsedAssetName);
+                                    newAsset.Add("isSelected", parsedAssetSelected);
+                                    newAsset.Add("type", parsedAssetType);
+                                    newAsset.Add("data", new Dictionary<String, Object>());
+                                    if (parsedAssetType == "audio")
+                                    {
+                                        ((Dictionary<String, Object>)(newAsset["data"]))["path"] = file_name.ToString();
+                                    }
+                                    assets.Add(newAsset);
+                                    if (parsedAssetType == "script")
+                                    {
+                                        ComboBoxItem customComponent = new ComboBoxItem();
+                                        customComponent.Content = assets[assets.Count - 1]["name"].ToString();
+                                        selectedAddedComponent.Items.Add(customComponent);
+                                    }
+                                }
+                            }
+                        }
+
+                        hierarchyGameObjects.Children.RemoveRange(0, hierarchyGameObjects.Children.Count);
+                        foreach (Dictionary<String, Object> gameObject in gameObjects)
+                        {
+                            StackPanel newHierarchyGameObject = new StackPanel();
+                            newHierarchyGameObject.Orientation = Orientation.Horizontal;
+                            hierarchyGameObjects.Children.Add(newHierarchyGameObject);
+                            if (((bool)(gameObject["isSelected"])))
+                            {
+                                newHierarchyGameObject.Background = System.Windows.Media.Brushes.LightSlateGray;
+                            }
+                            else
+                            {
+                                newHierarchyGameObject.Background = System.Windows.Media.Brushes.LightGray;
+                            }
+                            newHierarchyGameObject.Height = 35;
+                            ContextMenu newHierarchyGameObjectContextMenu = new ContextMenu();
+                            MenuItem newHierarchyGameObjectContextMenuItem = new MenuItem();
+                            newHierarchyGameObjectContextMenuItem.Header = "Удалить игровой объект";
+                            newHierarchyGameObjectContextMenuItem.DataContext = gameObject["id"].ToString();
+                            newHierarchyGameObjectContextMenuItem.Click += RemoveGameObjectHandler;
+                            newHierarchyGameObjectContextMenu.Items.Add(newHierarchyGameObjectContextMenuItem);
+                            newHierarchyGameObjectContextMenuItem = new MenuItem();
+                            newHierarchyGameObjectContextMenuItem.Header = "Переименовать игровой объект";
+                            newHierarchyGameObjectContextMenuItem.DataContext = ((int)(gameObjects.IndexOf(gameObject)));
+                            newHierarchyGameObjectContextMenuItem.Click += RenameGameObjectHandler;
+                            newHierarchyGameObjectContextMenu.Items.Add(newHierarchyGameObjectContextMenuItem);
+                            newHierarchyGameObject.ContextMenu = newHierarchyGameObjectContextMenu;
+                            TextBlock newHierarchyGameObjectToggler = new TextBlock();
+                            newHierarchyGameObjectToggler.Text = "⮫";
+                            newHierarchyGameObjectToggler.Margin = new Thickness(5, 0, 5, 0);
+                            newHierarchyGameObjectToggler.Width = 15;
+                            newHierarchyGameObjectToggler.MouseLeftButtonUp += ToggleGameObjectHandler;
+                            newHierarchyGameObject.Children.Add(newHierarchyGameObjectToggler);
+                            TextBlock newHierarchyGameObjectLabel = new TextBlock();
+                            newHierarchyGameObjectLabel.Text = gameObject["name"].ToString();
+                            newHierarchyGameObject.Children.Add(newHierarchyGameObjectLabel);
+                            newHierarchyGameObject.MouseLeftButtonUp += SelectGameObjectHandler;
+                        }
+
+                        foreach (Dictionary<String, Object> asset in assets)
+                        {
+                            StackPanel projectAsset = new StackPanel();
+                            projectAsset.Margin = new Thickness(10, 10, 10, 10);
+                            projectAsset.HorizontalAlignment = HorizontalAlignment.Left;
+                            projectAsset.Width = 45;
+                            if (((bool)(asset["isSelected"])))
+                            {
+                                projectAsset.Background = System.Windows.Media.Brushes.LightBlue;
+                            }
+                            TextBlock projectAssetIcon = new TextBlock();
+
+                            if (((string)(asset["type"])) == "audio")
+                            {
+                                projectAssetIcon.Text = "🎵";
+                            }
+                            else if (((string)(asset["type"])) == "script")
+                            {
+                                projectAssetIcon.Text = "🗎";
+                            }
+                            else if (((string)(asset["type"])) == "image")
+                            {
+                                projectAssetIcon.Text = "🖼";
+                            }
+                            else
+                            {
+                                projectAssetIcon.Text = "🖿";
+                            }
+                            projectAssetIcon.HorizontalAlignment = HorizontalAlignment.Center;
+                            projectAssetIcon.FontSize = 36;
+                            projectAssetIcon.Foreground = System.Windows.Media.Brushes.BlueViolet;
+                            TextBlock projectAssetLabel = new TextBlock();
+                            projectAssetLabel.Text = asset["name"].ToString();
+                            projectAssetLabel.HorizontalAlignment = HorizontalAlignment.Center;
+                            projectAsset.Children.Add(projectAssetIcon);
+                            projectAsset.Children.Add(projectAssetLabel);
+                            projectAsset.MouseLeftButtonUp += SelectAssetHandler;
+                            projectAssets.Children.Add(projectAsset);
+                        }
+                        // debugger.Speak("Тип ресурса " + assets[assets.Count - 1]["type"]);
+
+                    }
+                }
+
+            }
+        }
+    }
 
 }
 
