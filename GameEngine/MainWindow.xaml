@@ -13,6 +13,7 @@
                 <MenuItem Header="Файл">
                     <MenuItem Header="Создать игру" Click="CreateGameHanler" />
                     <MenuItem Header="Открыть игру" Click="OpenGameHanler" />
+                    <MenuItem Header="Собрать игру" Click="BuileHandler" />
                 </MenuItem>
                 <MenuItem Header="Правка">
                     <MenuItem Header="Копировать" Click="ImportAssetHanler" />

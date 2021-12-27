@@ -2555,6 +2555,28 @@ namespace GameEngine
 
             }
         }
+
+        private void BuileHandler(object sender, RoutedEventArgs e)
+        {
+            debugger.Speak("Собрать игру");
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.FileName = "Сборка";
+            sfd.DefaultExt = ".exe";
+            sfd.Filter = "Исполняемые файлы (.exe)|*.exe";
+            bool? res = sfd.ShowDialog();
+            if (res != false)
+            {
+                using (Stream s = File.Open(sfd.FileName, FileMode.OpenOrCreate))
+                {
+                    using (StreamWriter sw = new StreamWriter(s))
+                    {
+                        sw.Write("01");
+                    }
+                }
+            }
+        }
+
     }
 
 }
